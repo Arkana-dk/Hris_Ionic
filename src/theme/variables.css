@@ -1,2 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* For information on how to create your own theme, please see:
 http://ionicframework.com/docs/theming/ */
+
+/* ... sisa kode CSS Anda ... */

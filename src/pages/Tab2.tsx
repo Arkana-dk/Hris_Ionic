@@ -1,6 +1,10 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-import ExploreContainer from '../components/ExploreContainer';
-import './Tab2.css';
+import {
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+} from "@ionic/react";
 
 const Tab2: React.FC = () => {
   return (
@@ -10,13 +14,30 @@ const Tab2: React.FC = () => {
           <IonTitle>Tab 2</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Tab 2</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-        <ExploreContainer name="Tab 2 page" />
+      {/*
+        - Menggunakan Flexbox dari Tailwind untuk membuat konten berada di tengah.
+        - `flex flex-col justify-center items-center`: Membuat layout flex vertikal dan menengahkan item di kedua sumbu.
+        - `h-full`: Memastikan container mengambil tinggi penuh dari IonContent.
+        - `text-center`: Membuat teks di dalamnya rata tengah.
+      */}
+      <IonContent fullscreen className="ion-padding">
+        <div className="flex flex-col justify-center items-center h-full text-center">
+          <strong className="text-2xl font-semibold text-gray-800">
+            Tab 2 Page
+          </strong>
+
+          <p className="mt-2 text-gray-600">
+            Jelajahi{" "}
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://ionicframework.com/docs/components"
+              className="text-blue-500 hover:underline"
+            >
+              Komponen UI
+            </a>
+          </p>
+        </div>
       </IonContent>
     </IonPage>
   );
