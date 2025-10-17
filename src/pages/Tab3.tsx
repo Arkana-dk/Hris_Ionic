@@ -17,7 +17,7 @@ const Tab3: React.FC = () => {
       <IonContent fullscreen className="ion-padding">
         {/* Menggunakan layout Flexbox yang sama seperti Tab 2 untuk menengahkan konten */}
         <div className="flex flex-col justify-center items-center h-full text-center">
-          <strong className="text-2xl font-semibold text-gray-800">
+          <strong className="text-2xl font-semibold text-white">
             Tab 3 Page
           </strong>
 

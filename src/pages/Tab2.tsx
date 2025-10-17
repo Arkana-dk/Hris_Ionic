@@ -22,7 +22,7 @@ const Tab2: React.FC = () => {
       */}
       <IonContent fullscreen className="ion-padding">
         <div className="flex flex-col justify-center items-center h-full text-center">
-          <strong className="text-2xl font-semibold text-gray-800">
+          <strong className="text-2xl font-semibold text-white">
             Tab 2 Page
           </strong>
 
