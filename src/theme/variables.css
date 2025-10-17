@@ -1,2 +1,297 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
 /* For information on how to create your own theme, please see:
 http://ionicframework.com/docs/theming/ */
+
+/* ===================================
+   MODERN HR APP ANIMATIONS
+   - Smooth and subtle animations
+   - Professional and not overwhelming
+   =================================== */
+
+@layer utilities {
+  /* Fade Animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fadeIn {
+    animation: fadeIn 0.4s ease-out;
+  }
+
+  .animate-fadeInUp {
+    animation: fadeInUp 0.5s ease-out;
+  }
+
+  .animate-fadeInDown {
+    animation: fadeInDown 0.5s ease-out;
+  }
+
+  /* Slide Animations */
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .animate-slideInRight {
+    animation: slideInRight 0.5s ease-out;
+  }
+
+  .animate-slideInLeft {
+    animation: slideInLeft 0.5s ease-out;
+  }
+
+  /* Scale Animations */
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .animate-scaleIn {
+    animation: scaleIn 0.4s ease-out;
+  }
+
+  /* Stagger Animation for Lists */
+  .animate-stagger {
+    animation: fadeInUp 0.5s ease-out both;
+  }
+
+  .animate-stagger:nth-child(1) {
+    animation-delay: 0.05s;
+  }
+  .animate-stagger:nth-child(2) {
+    animation-delay: 0.1s;
+  }
+  .animate-stagger:nth-child(3) {
+    animation-delay: 0.15s;
+  }
+  .animate-stagger:nth-child(4) {
+    animation-delay: 0.2s;
+  }
+  .animate-stagger:nth-child(5) {
+    animation-delay: 0.25s;
+  }
+  .animate-stagger:nth-child(6) {
+    animation-delay: 0.3s;
+  }
+  .animate-stagger:nth-child(7) {
+    animation-delay: 0.35s;
+  }
+  .animate-stagger:nth-child(8) {
+    animation-delay: 0.4s;
+  }
+
+  /* Pulse Animation for Notifications */
+  @keyframes pulseSubtle {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.8;
+    }
+  }
+
+  .animate-pulseSubtle {
+    animation: pulseSubtle 2s ease-in-out infinite;
+  }
+
+  /* Shimmer Effect for Loading */
+  @keyframes shimmer {
+    0% {
+      background-position: -1000px 0;
+    }
+    100% {
+      background-position: 1000px 0;
+    }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s infinite linear;
+    background: linear-gradient(
+      to right,
+      #f0f0f0 0%,
+      #e0e0e0 50%,
+      #f0f0f0 100%
+    );
+    background-size: 1000px 100%;
+  }
+
+  /* Smooth Transitions */
+  .transition-smooth {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .transition-smooth-slow {
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Hover Effects */
+  .hover-lift {
+    transition: all 0.3s ease;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+  }
+
+  .hover-scale {
+    transition: transform 0.3s ease;
+  }
+
+  .hover-scale:hover {
+    transform: scale(1.05);
+  }
+
+  /* Gradient Animation (Subtle) */
+  @keyframes gradientShift {
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradientShift 10s ease infinite;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Smooth Scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ===================================
+   CUSTOM TAB BAR STYLING
+   =================================== */
+
+.custom-tab-bar {
+  --background: #ffffff;
+  --border: 1px solid #e5e7eb;
+  height: 65px;
+  padding-bottom: env(safe-area-inset-bottom);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.custom-tab-button {
+  --color: #9ca3af;
+  --color-selected: #6366f1;
+  --padding-top: 8px;
+  --padding-bottom: 8px;
+}
+
+.custom-tab-button ion-label {
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* Hide outline icon when tab is selected, show filled icon */
+.custom-tab-button .tab-icon-filled {
+  display: none;
+}
+
+.custom-tab-button.tab-selected .tab-icon-outline {
+  display: none;
+}
+
+.custom-tab-button.tab-selected .tab-icon-filled {
+  display: block;
+}
+
+/* Tab button animation */
+.custom-tab-button {
+  transition: all 0.3s ease;
+}
+
+.custom-tab-button ion-icon {
+  font-size: 24px;
+  transition: transform 0.3s ease;
+}
+
+.custom-tab-button.tab-selected ion-icon {
+  transform: scale(1.1);
+}
+
+/* Ripple effect on tap */
+.custom-tab-button::part(native) {
+  border-radius: 12px;
+  margin: 4px 8px;
+}
