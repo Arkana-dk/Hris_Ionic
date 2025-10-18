@@ -2,14 +2,18 @@ import React, { useState } from "react";
 import {
   IonContent,
   IonPage,
-  IonIcon,
   IonButton,
   IonInput,
   IonTextarea,
   IonSelect,
   IonSelectOption,
 } from "@ionic/react";
-import { arrowBack, checkmarkCircle, calendarOutline } from "ionicons/icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faArrowLeft,
+  faCheckCircle,
+  faCalendar,
+} from "@fortawesome/free-solid-svg-icons";
 import { useHistory } from "react-router-dom";
 
 const PengajuanPage: React.FC = () => {
@@ -26,16 +30,16 @@ const PengajuanPage: React.FC = () => {
   };
 
   return (
-    <IonPage className="bg-gradient-to-br from-gray-50 to-blue-50">
-      <IonContent fullscreen>
+    <IonPage className="bg-gray-50">
+      <IonContent fullscreen className="font-inter">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-5 py-6 rounded-b-3xl shadow-lg animate-fadeInDown">
+        <div className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-5 pt-12 pb-8 rounded-b-3xl shadow-lg">
           <div className="flex items-center gap-4">
             <button
               onClick={() => history.goBack()}
               className="p-2 hover:bg-white/20 rounded-full transition-smooth"
             >
-              <IonIcon icon={arrowBack} className="text-2xl" />
+              <FontAwesomeIcon icon={faArrowLeft} className="text-xl" />
             </button>
             <div>
               <h1 className="text-2xl font-bold">Pengajuan</h1>
@@ -72,7 +76,7 @@ const PengajuanPage: React.FC = () => {
             {/* Tanggal Mulai */}
             <div className="mb-5">
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                <IonIcon icon={calendarOutline} className="mr-1" />
+                <FontAwesomeIcon icon={faCalendar} className="mr-1" />
                 Tanggal Mulai
               </label>
               <IonInput
@@ -86,7 +90,7 @@ const PengajuanPage: React.FC = () => {
             {/* Tanggal Selesai */}
             <div className="mb-5">
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                <IonIcon icon={calendarOutline} className="mr-1" />
+                <FontAwesomeIcon icon={faCalendar} className="mr-1" />
                 Tanggal Selesai
               </label>
               <IonInput
@@ -117,20 +121,20 @@ const PengajuanPage: React.FC = () => {
               onClick={handleSubmit}
               className="custom-button-submit"
             >
-              <IonIcon icon={checkmarkCircle} className="mr-2" />
+              <FontAwesomeIcon icon={faCheckCircle} className="mr-2" />
               Kirim Pengajuan
             </IonButton>
           </div>
 
           {/* Informasi Saldo Cuti */}
-          <div className="mt-5 bg-white rounded-2xl p-5 shadow-md animate-fadeInUp">
+          <div className="mt-5 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-5 shadow-md">
             <h3 className="font-bold text-gray-900 mb-4">Saldo Cuti Anda</h3>
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-blue-50 rounded-xl p-3 text-center">
+              <div className="bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl p-3 text-center">
                 <p className="text-2xl font-bold text-blue-600">12</p>
                 <p className="text-xs text-gray-600">Cuti Tahunan</p>
               </div>
-              <div className="bg-green-50 rounded-xl p-3 text-center">
+              <div className="bg-gradient-to-br from-green-100 to-green-50 rounded-xl p-3 text-center">
                 <p className="text-2xl font-bold text-green-600">8</p>
                 <p className="text-xs text-gray-600">Cuti Sakit</p>
               </div>

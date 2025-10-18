@@ -25,7 +25,13 @@ import AttendancePage from "./features/attendance/AttendancePage";
 import { PengajuanPage } from "./features/pengajuan";
 import { HistoryPage } from "./features/history";
 import { KalenderPage } from "./features/kalender";
+import { PayslipPage } from "./features/payslip";
+import { DocumentsPage } from "./features/documents";
 import ProfilePage from "./features/profile/ProfilePage";
+import { LoginPage } from "./features/auth";
+
+// Services
+import { authService } from "./services";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -59,37 +65,51 @@ import "./theme/variables.css";
 
 setupIonicReact();
 
+// Protected Route Component
+const ProtectedRoute: React.FC<{ component: React.ComponentType; exact?: boolean; path: string }> = ({
+  component: Component,
+  ...rest
+}) => {
+  const isAuthenticated = authService.isAuthenticated();
+  
+  return (
+    <Route
+      {...rest}
+      render={(props) =>
+        isAuthenticated ? (
+          <Component {...props} />
+        ) : (
+          <Redirect to="/login" />
+        )
+      }
+    />
+  );
+};
+
 const App: React.FC = () => (
   <IonApp>
     <IonReactRouter>
+      {/* Login Route (No Tabs) */}
+      <Route exact path="/login">
+        <LoginPage />
+      </Route>
+
+      {/* Main App with Tabs (Protected) */}
+      <ProtectedRoute exact path="/" component={() => <Redirect to="/dashboard" />} />
+      
       <IonTabs>
         <IonRouterOutlet>
           {/* Main Tab Routes */}
-          <Route exact path="/dashboard">
-            <DashboardPage />
-          </Route>
-          <Route exact path="/attendance">
-            <AttendancePage />
-          </Route>
-          <Route exact path="/profile">
-            <ProfilePage />
-          </Route>
+          <ProtectedRoute exact path="/dashboard" component={DashboardPage} />
+          <ProtectedRoute exact path="/attendance" component={AttendancePage} />
+          <ProtectedRoute exact path="/profile" component={ProfilePage} />
 
           {/* Additional Feature Routes */}
-          <Route exact path="/pengajuan">
-            <PengajuanPage />
-          </Route>
-          <Route exact path="/history">
-            <HistoryPage />
-          </Route>
-          <Route exact path="/kalender">
-            <KalenderPage />
-          </Route>
-
-          {/* Default Route */}
-          <Route exact path="/">
-            <Redirect to="/dashboard" />
-          </Route>
+          <ProtectedRoute exact path="/pengajuan" component={PengajuanPage} />
+          <ProtectedRoute exact path="/history" component={HistoryPage} />
+          <ProtectedRoute exact path="/kalender" component={KalenderPage} />
+          <ProtectedRoute exact path="/payslip" component={PayslipPage} />
+          <ProtectedRoute exact path="/documents" component={DocumentsPage} />
         </IonRouterOutlet>
 
         {/* Modern Tab Bar */}

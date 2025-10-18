@@ -1,16 +1,20 @@
 import React from "react";
-import { IonContent, IonPage, IonAvatar, IonIcon } from "@ionic/react";
+import { IonContent, IonPage, IonAvatar } from "@ionic/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  notificationsOutline,
-  walletOutline,
-  airplaneOutline,
-  timeOutline,
-  briefcaseOutline,
-  calendarOutline,
-  documentTextOutline,
-  todayOutline,
-  addCircleOutline,
-} from "ionicons/icons";
+  faBell,
+  faWallet,
+  faPlane,
+  faClock,
+  faBriefcase,
+  faCalendarDays,
+  faFileLines,
+  faCalendarCheck,
+  faDollarSign,
+  faSun,
+  faMoon,
+  faCloudSun,
+} from "@fortawesome/free-solid-svg-icons";
 import { useHistory } from "react-router-dom";
 
 const DashboardPage: React.FC = () => {
@@ -21,73 +25,84 @@ const DashboardPage: React.FC = () => {
     position: "UI/UX Designer",
     tenure: "11 months",
     avatar: "https://ionicframework.com/docs/img/demos/avatar.svg",
+    fullName: "ILHAM HIDAYATULLAH",
+    jobTitle:
+      "Bridgestone Karawang (Facility Management) - QQ FINFEEL CLEANING SERVICE OFFICER",
   };
 
-  // Office Services - 8 fitur seperti gambar
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return { text: "Selamat Pagi", icon: faSun };
+    if (hour < 15) return { text: "Selamat Siang", icon: faCloudSun };
+    if (hour < 18) return { text: "Selamat Sore", icon: faCloudSun };
+    return { text: "Selamat Malam", icon: faMoon };
+  };
+
+  // Office Services - 8 fitur dengan gradient vibrant design
   const services = [
     {
       id: "reimburse",
       name: "Reimburse",
-      icon: walletOutline,
-      color: "bg-emerald-50",
-      textColor: "text-emerald-600",
+      icon: faWallet,
+      color: "bg-gradient-to-br from-cyan-400 to-cyan-600",
+      textColor: "text-white",
       route: "/pengajuan",
     },
     {
       id: "paid-leave",
       name: "Paid Leave",
-      icon: airplaneOutline,
-      color: "bg-sky-50",
-      textColor: "text-sky-600",
+      icon: faPlane,
+      color: "bg-gradient-to-br from-purple-400 to-purple-600",
+      textColor: "text-white",
       route: "/pengajuan",
     },
     {
       id: "overtime",
       name: "Overtime",
-      icon: timeOutline,
-      color: "bg-violet-50",
-      textColor: "text-violet-600",
+      icon: faClock,
+      color: "bg-gradient-to-br from-pink-400 to-pink-600",
+      textColor: "text-white",
       route: "/history",
     },
     {
       id: "assignment",
       name: "Assignment",
-      icon: briefcaseOutline,
-      color: "bg-amber-50",
-      textColor: "text-amber-600",
+      icon: faBriefcase,
+      color: "bg-gradient-to-br from-orange-400 to-orange-600",
+      textColor: "text-white",
       route: "/kalender",
     },
     {
       id: "calendar",
       name: "Calendar",
-      icon: calendarOutline,
-      color: "bg-rose-50",
-      textColor: "text-rose-600",
+      icon: faCalendarDays,
+      color: "bg-gradient-to-br from-teal-400 to-teal-600",
+      textColor: "text-white",
       route: "/kalender",
     },
     {
       id: "document",
       name: "Document",
-      icon: documentTextOutline,
-      color: "bg-teal-50",
-      textColor: "text-teal-600",
-      route: "/history",
+      icon: faFileLines,
+      color: "bg-gradient-to-br from-indigo-400 to-indigo-600",
+      textColor: "text-white",
+      route: "/documents",
     },
     {
       id: "events",
       name: "Events",
-      icon: todayOutline,
-      color: "bg-fuchsia-50",
-      textColor: "text-fuchsia-600",
+      icon: faCalendarCheck,
+      color: "bg-gradient-to-br from-rose-400 to-rose-600",
+      textColor: "text-white",
       route: "/kalender",
     },
     {
-      id: "add-proposal",
-      name: "Add Proposal",
-      icon: addCircleOutline,
-      color: "bg-indigo-50",
-      textColor: "text-indigo-600",
-      route: "/pengajuan",
+      id: "payslip",
+      name: "Payslip",
+      icon: faDollarSign,
+      color: "bg-gradient-to-br from-violet-400 to-violet-600",
+      textColor: "text-white",
+      route: "/payslip",
     },
   ];
 
@@ -97,7 +112,7 @@ const DashboardPage: React.FC = () => {
 
   return (
     <IonPage className="bg-gray-50">
-      <IonContent fullscreen>
+      <IonContent fullscreen className="font-inter">
         {/* Header */}
         <div className="relative overflow-hidden bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-5 pt-10 pb-12 rounded-b-3xl shadow-lg animate-fadeInDown">
           <div className="absolute inset-0">
@@ -105,53 +120,74 @@ const DashboardPage: React.FC = () => {
             <div className="absolute top-1/2 -left-14 w-40 h-40 bg-pink-400/25 blur-3xl rounded-full animate-[pulse_5s_ease-in-out_infinite]"></div>
             <div className="absolute bottom-0 right-1/4 w-24 h-24 bg-blue-400/20 blur-3xl rounded-full animate-[pulse_7s_ease-in-out_infinite]"></div>
           </div>
-          <div className="relative flex justify-between items-center">
-            <div className="flex items-center space-x-3">
-              <IonAvatar className="w-12 h-12">
+          <div className="relative flex justify-between items-start">
+            <div className="flex items-start space-x-3 flex-1">
+              <IonAvatar className="w-12 h-12 flex-shrink-0 mt-1">
                 <img alt="Profile" src={user.avatar} />
               </IonAvatar>
-              <div>
-                <h1 className="font-bold text-lg">{user.name}</h1>
-                <p className="text-xs text-indigo-200">
-                  {user.position} • {user.tenure}
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <FontAwesomeIcon
+                    icon={getGreeting().icon}
+                    className="text-lg text-yellow-200"
+                  />
+                  <h1 className="font-bold text-base">
+                    {getGreeting().text} {user.fullName},
+                  </h1>
+                </div>
+                <p className="text-xs text-indigo-200 leading-relaxed">
+                  {user.jobTitle}
                 </p>
               </div>
             </div>
-            <button className="relative">
-              <IonIcon icon={notificationsOutline} className="text-2xl" />
+            <button className="relative flex-shrink-0 ml-3 mt-1">
+              <FontAwesomeIcon icon={faBell} className="text-2xl" />
               <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
             </button>
           </div>
         </div>
 
-        {/* What's Up Today Section - Shortened */}
+        {/* What's Up Today Section - Modern Design */}
         <div className="relative px-5 -mt-8">
-          <div className="bg-white rounded-xl shadow-lg p-3 animate-fadeInUp">
-            <div className="flex items-center space-x-3">
-              {/* Calendar Date */}
-              <div className="flex flex-col items-center justify-center bg-gradient-to-br from-red-50 to-pink-50 rounded-lg px-3 py-2 min-w-[60px]">
-                <span className="text-red-500 font-bold text-xs uppercase">
-                  May
-                </span>
-                <span className="text-gray-800 font-bold text-2xl">21</span>
+          <div className="bg-white rounded-2xl shadow-xl p-4 border border-gray-100 hover:shadow-2xl transition-all duration-300 animate-fadeInUp">
+            <div className="flex items-center gap-4">
+              {/* Modern Date Circle */}
+              <div className="relative flex-shrink-0">
+                <div className="w-16 h-16 bg-gradient-to-br from-violet-500 via-purple-500 to-indigo-500 rounded-2xl flex items-center justify-center shadow-lg shadow-violet-500/30 transform hover:scale-105 transition-all duration-300">
+                  <span className="text-white font-black text-2xl drop-shadow-md">
+                    21
+                  </span>
+                </div>
               </div>
 
-              {/* Event Info */}
-              <div className="flex-1 border-l-2 border-gray-200 pl-3">
-                <p className="text-gray-600 text-xs font-medium">
+              {/* Event Info with Icon */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                  <p className="text-gray-500 text-[10px] font-bold uppercase tracking-wider">
+                    Today's Schedule
+                  </p>
+                </div>
+                <h3 className="font-black text-gray-800 text-sm mb-0.5 truncate">
                   UI/UX Team Huddle
-                </p>
-                <p className="font-semibold text-gray-800 text-sm">
-                  09:00am - 10:00am
-                </p>
+                </h3>
+                <div className="flex items-center gap-1.5">
+                  <FontAwesomeIcon
+                    icon={faClock}
+                    className="text-violet-500 text-xs"
+                  />
+                  <p className="font-bold text-gray-600 text-xs">
+                    09:00am - 10:00am
+                  </p>
+                </div>
               </div>
 
-              {/* See Details */}
+              {/* Modern See Details Button */}
               <button
                 onClick={() => handleNavigate("/kalender")}
-                className="text-xs text-indigo-600 font-semibold hover:text-indigo-800"
+                className="flex-shrink-0 px-4 py-2 bg-gradient-to-r from-violet-500 to-indigo-500 hover:from-violet-600 hover:to-indigo-600 text-white text-xs font-bold rounded-xl shadow-lg shadow-violet-500/30 hover:shadow-xl hover:shadow-violet-500/40 active:scale-95 transition-all duration-300"
               >
-                See Details
+                Details
               </button>
             </div>
           </div>
@@ -173,9 +209,9 @@ const DashboardPage: React.FC = () => {
                 <div
                   className={`w-14 h-14 rounded-2xl flex items-center justify-center ${service.color} shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer mb-1.5`}
                 >
-                  <IonIcon
+                  <FontAwesomeIcon
                     icon={service.icon}
-                    className={`text-2xl ${service.textColor}`}
+                    className={`text-xl ${service.textColor}`}
                   />
                 </div>
                 <p

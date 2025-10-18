@@ -2,17 +2,17 @@ import React, { useState } from "react";
 import {
   IonContent,
   IonPage,
-  IonIcon,
   IonSegment,
   IonSegmentButton,
   IonLabel,
 } from "@ionic/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  arrowBack,
-  checkmarkCircle,
-  closeCircle,
-  hourglassOutline,
-} from "ionicons/icons";
+  faArrowLeft,
+  faCheckCircle,
+  faTimesCircle,
+  faHourglass,
+} from "@fortawesome/free-solid-svg-icons";
 import { useHistory } from "react-router-dom";
 
 const HistoryPage: React.FC = () => {
@@ -94,22 +94,22 @@ const HistoryPage: React.FC = () => {
   };
 
   const getStatusIcon = (status: string) => {
-    if (status === "approved" || status === "present") return checkmarkCircle;
-    if (status === "rejected") return closeCircle;
-    return hourglassOutline;
+    if (status === "approved" || status === "present") return faCheckCircle;
+    if (status === "rejected") return faTimesCircle;
+    return faHourglass;
   };
 
   return (
-    <IonPage className="bg-gradient-to-br from-gray-50 to-purple-50">
-      <IonContent fullscreen>
+    <IonPage className="bg-gray-50">
+      <IonContent fullscreen className="font-inter">
         {/* Header */}
-        <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-5 py-6 rounded-b-3xl shadow-lg animate-fadeInDown">
+        <div className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-5 pt-12 pb-8 rounded-b-3xl shadow-lg">
           <div className="flex items-center gap-4">
             <button
               onClick={() => history.goBack()}
               className="p-2 hover:bg-white/20 rounded-full transition-smooth"
             >
-              <IonIcon icon={arrowBack} className="text-2xl" />
+              <FontAwesomeIcon icon={faArrowLeft} className="text-xl" />
             </button>
             <div>
               <h1 className="text-2xl font-bold">History</h1>
@@ -213,7 +213,7 @@ const HistoryPage: React.FC = () => {
                         leave.status
                       )}`}
                     >
-                      <IonIcon icon={getStatusIcon(leave.status)} />
+                      <FontAwesomeIcon icon={getStatusIcon(leave.status)} />
                       {leave.status === "approved" && "Disetujui"}
                       {leave.status === "pending" && "Menunggu"}
                       {leave.status === "rejected" && "Ditolak"}

@@ -1,14 +1,15 @@
 import React, { useState } from "react";
-import { IonContent, IonPage, IonIcon } from "@ionic/react";
+import { IonContent, IonPage } from "@ionic/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  arrowBack,
-  chevronBackOutline,
-  chevronForwardOutline,
-  calendarOutline,
-  airplaneOutline,
-  businessOutline,
-  peopleOutline,
-} from "ionicons/icons";
+  faArrowLeft,
+  faChevronLeft,
+  faChevronRight,
+  faCalendar,
+  faPlane,
+  faBriefcase,
+  faUsers,
+} from "@fortawesome/free-solid-svg-icons";
 import { useHistory } from "react-router-dom";
 
 const KalenderPage: React.FC = () => {
@@ -37,7 +38,7 @@ const KalenderPage: React.FC = () => {
       title: "Rapat Tim Marketing",
       time: "09:00 - 11:00",
       type: "meeting",
-      icon: peopleOutline,
+      icon: faUsers,
       color: "purple",
     },
     {
@@ -46,7 +47,7 @@ const KalenderPage: React.FC = () => {
       title: "Cuti Tahunan",
       time: "Full Day",
       type: "leave",
-      icon: airplaneOutline,
+      icon: faPlane,
       color: "blue",
     },
     {
@@ -55,7 +56,7 @@ const KalenderPage: React.FC = () => {
       title: "Presentasi Project",
       time: "14:00 - 16:00",
       type: "meeting",
-      icon: businessOutline,
+      icon: faBriefcase,
       color: "green",
     },
     {
@@ -64,7 +65,7 @@ const KalenderPage: React.FC = () => {
       title: "Libur Nasional - Waisak",
       time: "Full Day",
       type: "holiday",
-      icon: calendarOutline,
+      icon: faCalendar,
       color: "red",
     },
   ];
@@ -142,16 +143,16 @@ const KalenderPage: React.FC = () => {
   };
 
   return (
-    <IonPage className="bg-gradient-to-br from-gray-50 to-blue-50">
-      <IonContent fullscreen>
+    <IonPage className="bg-gray-50">
+      <IonContent fullscreen className="font-inter">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-5 py-6 rounded-b-3xl shadow-lg animate-fadeInDown">
+        <div className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-5 pt-12 pb-8 rounded-b-3xl shadow-lg">
           <div className="flex items-center gap-4">
             <button
               onClick={() => history.goBack()}
               className="p-2 hover:bg-white/20 rounded-full transition-smooth"
             >
-              <IonIcon icon={arrowBack} className="text-2xl" />
+              <FontAwesomeIcon icon={faArrowLeft} className="text-xl" />
             </button>
             <div>
               <h1 className="text-2xl font-bold">Kalender</h1>
@@ -163,13 +164,13 @@ const KalenderPage: React.FC = () => {
         {/* Calendar */}
         <div className="p-5">
           {/* Month Navigation */}
-          <div className="bg-white rounded-2xl shadow-md p-4 mb-5 animate-fadeInUp">
+          <div className="bg-white rounded-2xl shadow-md p-4 mb-5">
             <div className="flex items-center justify-between mb-4">
               <button
                 onClick={() => changeMonth(-1)}
                 className="p-2 hover:bg-gray-100 rounded-full transition-smooth"
               >
-                <IonIcon icon={chevronBackOutline} className="text-xl" />
+                <FontAwesomeIcon icon={faChevronLeft} className="text-lg" />
               </button>
               <div className="text-center">
                 <h2 className="text-xl font-bold text-gray-900">
@@ -180,7 +181,7 @@ const KalenderPage: React.FC = () => {
                 onClick={() => changeMonth(1)}
                 className="p-2 hover:bg-gray-100 rounded-full transition-smooth"
               >
-                <IonIcon icon={chevronForwardOutline} className="text-xl" />
+                <FontAwesomeIcon icon={faChevronRight} className="text-lg" />
               </button>
             </div>
 
@@ -239,14 +240,14 @@ const KalenderPage: React.FC = () => {
               {selectedEvents.map((event, index) => (
                 <div
                   key={event.id}
-                  className="bg-white rounded-xl p-4 shadow-md animate-stagger hover-lift"
+                  className="bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <div className="flex items-center gap-4">
                     <div
                       className={`p-3 rounded-xl ${getColorClass(event.color)}`}
                     >
-                      <IonIcon icon={event.icon} className="text-2xl" />
+                      <FontAwesomeIcon icon={event.icon} className="text-xl" />
                     </div>
                     <div className="flex-1">
                       <h4 className="font-bold text-gray-900">{event.title}</h4>
@@ -267,7 +268,7 @@ const KalenderPage: React.FC = () => {
                 .map((event, index) => (
                   <div
                     key={event.id}
-                    className="bg-white rounded-xl p-4 shadow-md animate-stagger hover-lift"
+                    className="bg-white rounded-xl p-4 shadow-md hover:shadow-lg transition-shadow"
                     style={{ animationDelay: `${(index + 1) * 0.1}s` }}
                   >
                     <div className="flex items-center gap-4">
@@ -276,7 +277,10 @@ const KalenderPage: React.FC = () => {
                           event.color
                         )}`}
                       >
-                        <IonIcon icon={event.icon} className="text-2xl" />
+                        <FontAwesomeIcon
+                          icon={event.icon}
+                          className="text-xl"
+                        />
                       </div>
                       <div className="flex-1">
                         <h4 className="font-bold text-gray-900">
