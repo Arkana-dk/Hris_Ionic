@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import { IonContent, IonPage, IonSpinner, IonToast } from "@ionic/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope, faLock, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEnvelope,
+  faLock,
+  faEye,
+  faEyeSlash,
+} from "@fortawesome/free-solid-svg-icons";
 import { useHistory } from "react-router-dom";
 import { authService } from "../../services";
 
@@ -14,9 +19,21 @@ const LoginPage: React.FC = () => {
   const [error, setError] = useState("");
   const [showToast, setShowToast] = useState(false);
 
+  // Debug untuk memastikan state berubah
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("Email changed:", e.target.value);
+    setEmail(e.target.value);
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("Password changed:", e.target.value);
+    setPassword(e.target.value);
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+    console.log("Form submitted with:", { email, password });
+
     // Validation
     if (!email || !password) {
       setError("Email dan password harus diisi");
@@ -30,7 +47,7 @@ const LoginPage: React.FC = () => {
     try {
       const result = await authService.login({ email, password });
       console.log("Login success:", result);
-      
+
       // Redirect to dashboard
       history.push("/dashboard");
     } catch (err) {
@@ -47,14 +64,17 @@ const LoginPage: React.FC = () => {
     <IonPage className="bg-gradient-to-br from-gray-50 to-gray-100">
       <IonContent fullscreen className="font-inter">
         {/* Header Section with Gradient */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 text-white px-5 pt-16 pb-32">
+        <div className="relative overflow-hidden bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 text-white px-5 pt-16 pb-32 pointer-events-none">
           {/* Animated decorative orbs */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute -top-20 -right-20 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute top-1/2 -left-20 w-56 h-56 bg-pink-400/20 blur-3xl animate-pulse" style={{ animationDelay: "1s" }}></div>
+            <div
+              className="absolute top-1/2 -left-20 w-56 h-56 bg-pink-400/20 blur-3xl animate-pulse"
+              style={{ animationDelay: "1s" }}
+            ></div>
           </div>
 
-          <div className="relative z-10 text-center">
+          <div className="relative z-10 text-center pointer-events-auto">
             <div className="w-20 h-20 bg-white/20 backdrop-blur-lg rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl">
               <span className="text-4xl">🏢</span>
             </div>
@@ -66,9 +86,9 @@ const LoginPage: React.FC = () => {
         </div>
 
         {/* Login Form Card */}
-        <div className="px-5 -mt-24 mb-6 relative z-20">
+        <div className="px-5 -mt-24 mb-6 relative z-30 pointer-events-auto">
           <div className="bg-white rounded-3xl p-6 shadow-2xl backdrop-blur-xl border border-gray-100">
-            <form onSubmit={handleLogin}>
+            <form onSubmit={handleLogin} className="pointer-events-auto">
               {/* Email Input */}
               <div className="mb-4">
                 <label className="block text-sm font-bold text-gray-700 mb-2">
@@ -81,7 +101,7 @@ const LoginPage: React.FC = () => {
                   <input
                     type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={handleEmailChange}
                     placeholder="Enter your email"
                     disabled={loading}
                     className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all duration-300 text-gray-900 font-medium"
@@ -101,7 +121,7 @@ const LoginPage: React.FC = () => {
                   <input
                     type={showPassword ? "text" : "password"}
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={handlePasswordChange}
                     placeholder="Enter your password"
                     disabled={loading}
                     className="w-full pl-12 pr-14 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all duration-300 text-gray-900 font-medium"
@@ -148,10 +168,14 @@ const LoginPage: React.FC = () => {
                   🔑 Demo Credentials:
                 </p>
                 <p className="text-xs text-gray-600 font-medium">
-                  Email: <span className="font-bold text-gray-800">admin@example.com</span>
+                  Email:{" "}
+                  <span className="font-bold text-gray-800">
+                    admin@example.com
+                  </span>
                 </p>
                 <p className="text-xs text-gray-600 font-medium">
-                  Password: <span className="font-bold text-gray-800">password</span>
+                  Password:{" "}
+                  <span className="font-bold text-gray-800">password</span>
                 </p>
               </div>
             </form>

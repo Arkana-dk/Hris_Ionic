@@ -130,24 +130,28 @@ const DocumentsPage: React.FC = () => {
   });
 
   // Category stats
-  const categories = [
+  const categories: Array<{
+    type: "contract" | "certificate" | "policy" | "announcement";
+    label: string;
+    count: number;
+  }> = [
     {
-      type: "contract",
+      type: "contract" as const,
       label: "Contracts",
       count: documents.filter((d) => d.category === "contract").length,
     },
     {
-      type: "certificate",
+      type: "certificate" as const,
       label: "Certificates",
       count: documents.filter((d) => d.category === "certificate").length,
     },
     {
-      type: "policy",
+      type: "policy" as const,
       label: "Policies",
       count: documents.filter((d) => d.category === "policy").length,
     },
     {
-      type: "announcement",
+      type: "announcement" as const,
       label: "Announcements",
       count: documents.filter((d) => d.category === "announcement").length,
     },

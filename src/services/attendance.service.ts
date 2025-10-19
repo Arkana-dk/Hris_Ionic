@@ -1,4 +1,4 @@
-import apiClient from './api.config';
+import apiClient from "./api.config";
 import {
   Attendance,
   ClockInRequest,
@@ -6,10 +6,10 @@ import {
   PresensiRequest,
   ApiResponse,
   PaginatedResponse,
-} from '../types/api.types';
+} from "../types/api.types";
 
 class AttendanceService {
-  private basePath = '/employee';
+  private basePath = "/employee";
 
   /**
    * Get attendance list
@@ -95,17 +95,15 @@ class AttendanceService {
   /**
    * Submit attendance request (izin/sakit/etc)
    */
-  async submitRequest(
-    data: PresensiRequest
-  ): Promise<AttendanceRequest> {
+  async submitRequest(data: PresensiRequest): Promise<AttendanceRequest> {
     try {
       const formData = new FormData();
-      formData.append('type', data.type);
-      formData.append('date', data.date);
-      formData.append('reason', data.reason);
+      formData.append("type", data.type);
+      formData.append("date", data.date);
+      formData.append("reason", data.reason);
 
       if (data.attachment && data.attachment instanceof File) {
-        formData.append('attachment', data.attachment);
+        formData.append("attachment", data.attachment);
       }
 
       const response = await apiClient.post<ApiResponse<AttendanceRequest>>(
@@ -113,7 +111,7 @@ class AttendanceService {
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
         }
       );
@@ -143,7 +141,7 @@ class AttendanceService {
   async getCurrentLocation(): Promise<GeolocationPosition> {
     return new Promise((resolve, reject) => {
       if (!navigator.geolocation) {
-        reject(new Error('Geolocation is not supported'));
+        reject(new Error("Geolocation is not supported"));
         return;
       }
 
@@ -163,12 +161,14 @@ class AttendanceService {
    * Handle API errors
    */
   private handleError(error: unknown): Error {
-    if (error && typeof error === 'object' && 'response' in error) {
-      const axiosError = error as { response?: { data?: { message?: string } } };
-      const message = axiosError.response?.data?.message || 'An error occurred';
+    if (error && typeof error === "object" && "response" in error) {
+      const axiosError = error as {
+        response?: { data?: { message?: string } };
+      };
+      const message = axiosError.response?.data?.message || "An error occurred";
       return new Error(message);
     }
-    return new Error('Network error. Please check your connection.');
+    return new Error("Network error. Please check your connection.");
   }
 }
 

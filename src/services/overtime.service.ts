@@ -1,12 +1,12 @@
-import apiClient from './api.config';
+import apiClient from "./api.config";
 import {
   OvertimeRequest,
   CreateOvertimeRequest,
   ApiResponse,
-} from '../types/api.types';
+} from "../types/api.types";
 
 class OvertimeService {
-  private basePath = '/employee/overtime-request';
+  private basePath = "/employee/overtime-request";
 
   /**
    * Get overtime requests list
@@ -25,9 +25,7 @@ class OvertimeService {
   /**
    * Submit overtime request
    */
-  async submitOvertime(
-    data: CreateOvertimeRequest
-  ): Promise<OvertimeRequest> {
+  async submitOvertime(data: CreateOvertimeRequest): Promise<OvertimeRequest> {
     try {
       const response = await apiClient.post<ApiResponse<OvertimeRequest>>(
         this.basePath,
@@ -71,12 +69,14 @@ class OvertimeService {
    * Handle API errors
    */
   private handleError(error: unknown): Error {
-    if (error && typeof error === 'object' && 'response' in error) {
-      const axiosError = error as { response?: { data?: { message?: string } } };
-      const message = axiosError.response?.data?.message || 'An error occurred';
+    if (error && typeof error === "object" && "response" in error) {
+      const axiosError = error as {
+        response?: { data?: { message?: string } };
+      };
+      const message = axiosError.response?.data?.message || "An error occurred";
       return new Error(message);
     }
-    return new Error('Network error. Please check your connection.');
+    return new Error("Network error. Please check your connection.");
   }
 }
 

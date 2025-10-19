@@ -70,18 +70,29 @@ export interface ShiftGroup {
 // ============================================
 
 export interface Attendance {
-  id: number;
-  employee_id: number;
-  date: string;
-  clock_in: string | null;
-  clock_out: string | null;
+  id: number | string;
+  employee_id?: number;
+  tanggal?: string; // Indonesian API
+  date?: string; // English API
+  jam_masuk?: string | null; // Indonesian API
+  jam_keluar?: string | null; // Indonesian API
+  clock_in?: string | null; // English API
+  clock_out?: string | null; // English API
   clock_in_location?: string;
   clock_out_location?: string;
-  status: 'present' | 'late' | 'absent' | 'leave' | 'overtime';
+  status:
+    | "present"
+    | "late"
+    | "absent"
+    | "leave"
+    | "overtime"
+    | "hadir"
+    | "telat";
+  keterangan?: string;
   notes?: string;
   shift?: Shift;
-  created_at: string;
-  updated_at: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface Shift {
@@ -97,9 +108,9 @@ export interface AttendanceRequest {
   id: number;
   employee_id: number;
   date: string;
-  type: 'izin' | 'sakit' | 'cuti' | 'telat' | 'lupa_absen';
+  type: "izin" | "sakit" | "cuti" | "telat" | "lupa_absen";
   reason: string;
-  status: 'pending' | 'approved' | 'rejected';
+  status: "pending" | "approved" | "rejected";
   attachment?: string;
   approved_by?: number;
   approved_at?: string;
@@ -114,7 +125,7 @@ export interface ClockInRequest {
 }
 
 export interface PresensiRequest {
-  type: 'izin' | 'sakit' | 'cuti' | 'telat' | 'lupa_absen';
+  type: "izin" | "sakit" | "cuti" | "telat" | "lupa_absen";
   date: string;
   reason: string;
   attachment?: File | string;
@@ -132,7 +143,7 @@ export interface OvertimeRequest {
   end_time: string;
   duration: number; // in hours
   reason: string;
-  status: 'pending' | 'approved' | 'rejected';
+  status: "pending" | "approved" | "rejected";
   approved_by?: number;
   approved_at?: string;
   notes?: string;
@@ -153,12 +164,18 @@ export interface CreateOvertimeRequest {
 export interface LeaveRequest {
   id: number;
   employee_id: number;
-  leave_type: 'annual' | 'sick' | 'maternity' | 'paternity' | 'unpaid' | 'other';
+  leave_type:
+    | "annual"
+    | "sick"
+    | "maternity"
+    | "paternity"
+    | "unpaid"
+    | "other";
   start_date: string;
   end_date: string;
   duration: number; // in days
   reason: string;
-  status: 'pending' | 'approved' | 'rejected';
+  status: "pending" | "approved" | "rejected";
   attachment?: string;
   approved_by?: number;
   approved_at?: string;
@@ -199,7 +216,7 @@ export interface Payslip {
   payment_date?: string;
   payment_method?: string;
   bank_account?: string;
-  status: 'draft' | 'approved' | 'paid';
+  status: "draft" | "approved" | "paid";
   created_at: string;
 }
 
@@ -207,7 +224,7 @@ export interface PayrollComponent {
   id: number;
   name: string;
   amount: number;
-  type: 'fixed' | 'variable' | 'percentage';
+  type: "fixed" | "variable" | "percentage";
 }
 
 // ============================================
@@ -238,7 +255,7 @@ export interface CalendarEvent {
   id: number;
   title: string;
   date: string;
-  type: 'shift' | 'leave' | 'overtime' | 'meeting' | 'holiday';
+  type: "shift" | "leave" | "overtime" | "meeting" | "holiday";
   start_time?: string;
   end_time?: string;
   description?: string;

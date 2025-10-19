@@ -1,10 +1,10 @@
-import apiClient from './api.config';
+import apiClient from "./api.config";
 import {
   LoginRequest,
   LoginResponse,
   User,
   ApiResponse,
-} from '../types/api.types';
+} from "../types/api.types";
 
 class AuthService {
   /**
@@ -13,18 +13,18 @@ class AuthService {
   async login(credentials: LoginRequest): Promise<LoginResponse> {
     try {
       const response = await apiClient.post<ApiResponse<LoginResponse>>(
-        '/login',
+        "/login",
         credentials
       );
 
       const { token, user } = response.data.data;
 
       // Store token and user in localStorage
-      localStorage.setItem('auth_token', token);
-      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem("auth_token", token);
+      localStorage.setItem("user", JSON.stringify(user));
 
       return { token, user };
-    } catch (error: any) {
+    } catch (error) {
       throw this.handleError(error);
     }
   }
@@ -34,13 +34,13 @@ class AuthService {
    */
   async logout(): Promise<void> {
     try {
-      await apiClient.post('/logout');
+      await apiClient.post("/logout");
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
     } finally {
       // Clear local storage regardless of API response
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('user');
+      localStorage.removeItem("auth_token");
+      localStorage.removeItem("user");
     }
   }
 
@@ -49,14 +49,14 @@ class AuthService {
    */
   async me(): Promise<User> {
     try {
-      const response = await apiClient.get<ApiResponse<User>>('/me');
+      const response = await apiClient.get<ApiResponse<User>>("/me");
       const user = response.data.data;
 
       // Update user in localStorage
-      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem("user", JSON.stringify(user));
 
       return user;
-    } catch (error: any) {
+    } catch (error) {
       throw this.handleError(error);
     }
   }
@@ -65,7 +65,7 @@ class AuthService {
    * Check if user is authenticated
    */
   isAuthenticated(): boolean {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
     return !!token;
   }
 
@@ -73,7 +73,7 @@ class AuthService {
    * Get current user from localStorage
    */
   getCurrentUser(): User | null {
-    const userStr = localStorage.getItem('user');
+    const userStr = localStorage.getItem("user");
     if (!userStr) return null;
 
     try {
@@ -87,18 +87,19 @@ class AuthService {
    * Get auth token
    */
   getToken(): string | null {
-    return localStorage.getItem('auth_token');
+    return localStorage.getItem("auth_token");
   }
 
   /**
    * Handle API errors
    */
-  private handleError(error: any): Error {
-    if (error.response) {
-      const message = error.response.data?.message || 'An error occurred';
+  private handleError(error: unknown): Error {
+    const err = error as { response?: { data?: { message?: string } } };
+    if (err.response) {
+      const message = err.response.data?.message || "An error occurred";
       return new Error(message);
     }
-    return new Error('Network error. Please check your connection.');
+    return new Error("Network error. Please check your connection.");
   }
 }
 

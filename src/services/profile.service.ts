@@ -1,11 +1,8 @@
-import apiClient from './api.config';
-import {
-  EmployeeProfile,
-  ApiResponse,
-} from '../types/api.types';
+import apiClient from "./api.config";
+import { EmployeeProfile, ApiResponse } from "../types/api.types";
 
 class ProfileService {
-  private basePath = '/employee/profile';
+  private basePath = "/employee/profile";
 
   /**
    * Get employee profile
@@ -24,7 +21,9 @@ class ProfileService {
   /**
    * Update profile (if API exists)
    */
-  async updateProfile(data: Partial<EmployeeProfile>): Promise<EmployeeProfile> {
+  async updateProfile(
+    data: Partial<EmployeeProfile>
+  ): Promise<EmployeeProfile> {
     try {
       const response = await apiClient.put<ApiResponse<EmployeeProfile>>(
         this.basePath,
@@ -42,17 +41,15 @@ class ProfileService {
   async uploadAvatar(file: File): Promise<string> {
     try {
       const formData = new FormData();
-      formData.append('avatar', file);
+      formData.append("avatar", file);
 
-      const response = await apiClient.post<ApiResponse<{ avatar_url: string }>>(
-        `${this.basePath}/avatar`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      );
+      const response = await apiClient.post<
+        ApiResponse<{ avatar_url: string }>
+      >(`${this.basePath}/avatar`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       return response.data.data.avatar_url;
     } catch (error) {
       throw this.handleError(error);
@@ -63,12 +60,14 @@ class ProfileService {
    * Handle API errors
    */
   private handleError(error: unknown): Error {
-    if (error && typeof error === 'object' && 'response' in error) {
-      const axiosError = error as { response?: { data?: { message?: string } } };
-      const message = axiosError.response?.data?.message || 'An error occurred';
+    if (error && typeof error === "object" && "response" in error) {
+      const axiosError = error as {
+        response?: { data?: { message?: string } };
+      };
+      const message = axiosError.response?.data?.message || "An error occurred";
       return new Error(message);
     }
-    return new Error('Network error. Please check your connection.');
+    return new Error("Network error. Please check your connection.");
   }
 }
 

@@ -3,9 +3,10 @@
 ## ✅ **COMPLETED - API Services Created**
 
 ### 1. **Authentication Service** (`auth.service.ts`)
+
 ```typescript
 ✅ login(credentials) - POST /api/login
-✅ logout() - POST /api/logout  
+✅ logout() - POST /api/logout
 ✅ me() - GET /api/me
 ✅ isAuthenticated()
 ✅ getCurrentUser()
@@ -13,6 +14,7 @@
 ```
 
 ### 2. **Profile Service** (`profile.service.ts`)
+
 ```typescript
 ✅ getProfile() - GET /api/employee/profile
 ✅ updateProfile(data) - PUT /api/employee/profile
@@ -20,6 +22,7 @@
 ```
 
 ### 3. **Attendance Service** (`attendance.service.ts`)
+
 ```typescript
 ✅ getAttendance(params) - GET /api/employee/attendance
 ✅ clockIn(data) - POST /api/employee/attendance
@@ -32,6 +35,7 @@
 ```
 
 ### 4. **Overtime Service** (`overtime.service.ts`)
+
 ```typescript
 ✅ getOvertimeRequests() - GET /api/employee/overtime-request
 ✅ submitOvertime(data) - POST /api/employee/overtime-request
@@ -40,6 +44,7 @@
 ```
 
 ### 5. **Leave Service** (`leave.service.ts`)
+
 ```typescript
 ✅ getLeaveRequests() - GET /api/employee/cuti
 ✅ submitLeave(data) - POST /api/employee/cuti
@@ -50,6 +55,7 @@
 ```
 
 ### 6. **Payslip Service** (`payslip.service.ts`)
+
 ```typescript
 ✅ getPayslips(params) - GET /api/employee/payslip
 ✅ getPayslipDetail(id) - GET /api/employee/payslip/{id}
@@ -65,6 +71,7 @@
 ## ✅ **COMPLETED - UI Pages Created**
 
 ### 1. **Login Page** (`features/auth/LoginPage.tsx`)
+
 - ✅ Modern gradient design
 - ✅ Email & password validation
 - ✅ Show/hide password toggle
@@ -79,6 +86,7 @@
 ## ✅ **COMPLETED - Configuration**
 
 ### 1. **API Configuration** (`services/api.config.ts`)
+
 - ✅ Axios instance setup
 - ✅ Base URL configuration
 - ✅ Request interceptor (auto add Bearer token)
@@ -86,6 +94,7 @@
 - ✅ Auto logout on token expiry
 
 ### 2. **TypeScript Types** (`types/api.types.ts`)
+
 - ✅ User, Profile, Attendance types
 - ✅ Overtime, Leave, Payslip types
 - ✅ Request/Response types
@@ -93,11 +102,13 @@
 - ✅ Statistics types
 
 ### 3. **Environment Variables** (`.env`)
+
 ```env
 REACT_APP_API_URL=http://localhost:8000/api
 ```
 
 ### 4. **App Routing** (`App.tsx`)
+
 - ✅ Login route (/login)
 - ✅ Protected route component
 - ✅ Auth guard for all pages
@@ -110,20 +121,26 @@ REACT_APP_API_URL=http://localhost:8000/api
 ### **Priority 1: Critical Pages**
 
 #### 1. **Dashboard Page** (`features/dashboard/DashboardPage.tsx`)
+
 **APIs to integrate:**
+
 - [ ] `profileService.getProfile()` - Get user info
 - [ ] `attendanceService.getAttendance()` - Today's attendance
 - [ ] Replace static data with real API data
 
 #### 2. **Attendance Page** (`features/attendance/AttendancePage.tsx`)
+
 **APIs to integrate:**
+
 - [ ] `attendanceService.clockIn()` - Clock in/out button
 - [ ] `attendanceService.getCurrentLocation()` - Get GPS
 - [ ] `attendanceService.getHistory()` - History list
 - [ ] Show real-time clock status
 
 #### 3. **Profile Page** (`features/profile/ProfilePage.tsx`)
+
 **APIs to integrate:**
+
 - [ ] `profileService.getProfile()` - Load profile data
 - [ ] `profileService.uploadAvatar()` - Upload photo
 - [ ] `authService.logout()` - Logout button
@@ -132,21 +149,27 @@ REACT_APP_API_URL=http://localhost:8000/api
 ### **Priority 2: Feature Pages**
 
 #### 4. **Pengajuan Page** (`features/pengajuan/PengajuanPage.tsx`)
+
 **APIs to integrate:**
+
 - [ ] `overtimeService.submitOvertime()` - Submit lembur
 - [ ] `leaveService.submitLeave()` - Submit cuti
 - [ ] `attendanceService.submitRequest()` - Submit izin/sakit
 - [ ] Form submission with validation
 
 #### 5. **History Page** (`features/history/HistoryPage.tsx`)
+
 **APIs to integrate:**
+
 - [ ] `attendanceService.getHistory()` - Attendance history
 - [ ] `overtimeService.getHistory()` - Overtime history
 - [ ] `leaveService.getHistory()` - Leave history
 - [ ] `attendanceService.getRequests()` - Request status
 
 #### 6. **Payslip Page** (`features/payslip/PayslipPage.tsx`)
+
 **APIs to integrate:**
+
 - [ ] `payslipService.getPayslips()` - List payslips
 - [ ] `payslipService.getPayslipDetail()` - Detail view
 - [ ] `payslipService.downloadPDF()` - Download button
@@ -155,14 +178,18 @@ REACT_APP_API_URL=http://localhost:8000/api
 ### **Priority 3: Additional Features**
 
 #### 7. **Kalender Page** (`features/kalender/KalenderPage.tsx`)
+
 **APIs to integrate:**
+
 - [ ] Show shift schedule
 - [ ] Show leave days
 - [ ] Show overtime schedule
 - [ ] Show holidays
 
 #### 8. **Documents Page** (`features/documents/DocumentsPage.tsx`)
+
 **APIs to integrate:**
+
 - [ ] List employee documents
 - [ ] Download documents
 - [ ] View documents
@@ -172,9 +199,10 @@ REACT_APP_API_URL=http://localhost:8000/api
 ## 🔧 **How to Integrate API to Pages**
 
 ### Example 1: Load Profile Data
+
 ```typescript
-import { useEffect, useState } from 'react';
-import { profileService } from '../../services';
+import { useEffect, useState } from "react";
+import { profileService } from "../../services";
 
 const [profile, setProfile] = useState(null);
 const [loading, setLoading] = useState(true);
@@ -188,7 +216,7 @@ const loadProfile = async () => {
     const data = await profileService.getProfile();
     setProfile(data);
   } catch (error) {
-    console.error('Error loading profile:', error);
+    console.error("Error loading profile:", error);
   } finally {
     setLoading(false);
   }
@@ -196,27 +224,28 @@ const loadProfile = async () => {
 ```
 
 ### Example 2: Clock In/Out
+
 ```typescript
-import { attendanceService } from '../../services';
+import { attendanceService } from "../../services";
 
 const handleClockIn = async () => {
   try {
     setLoading(true);
-    
+
     // Get GPS location
     const location = await attendanceService.getCurrentLocation();
-    
+
     // Submit clock in
     const result = await attendanceService.clockIn({
       latitude: location.coords.latitude,
       longitude: location.coords.longitude,
-      notes: 'Clock in from mobile'
+      notes: "Clock in from mobile",
     });
-    
-    console.log('Clock in success:', result);
+
+    console.log("Clock in success:", result);
     // Show success toast
   } catch (error) {
-    console.error('Clock in error:', error);
+    console.error("Clock in error:", error);
     // Show error toast
   } finally {
     setLoading(false);
@@ -225,8 +254,9 @@ const handleClockIn = async () => {
 ```
 
 ### Example 3: Submit Overtime Request
+
 ```typescript
-import { overtimeService } from '../../services';
+import { overtimeService } from "../../services";
 
 const handleSubmitOvertime = async (data) => {
   try {
@@ -234,13 +264,13 @@ const handleSubmitOvertime = async (data) => {
       date: data.date,
       start_time: data.startTime,
       end_time: data.endTime,
-      reason: data.reason
+      reason: data.reason,
     });
-    
-    console.log('Overtime submitted:', result);
+
+    console.log("Overtime submitted:", result);
     // Navigate back or show success
   } catch (error) {
-    console.error('Submit error:', error);
+    console.error("Submit error:", error);
   }
 };
 ```
@@ -250,6 +280,7 @@ const handleSubmitOvertime = async (data) => {
 ## 🎯 **Summary**
 
 ### ✅ **What's Done:**
+
 1. All API service files created (6 services)
 2. All TypeScript types defined
 3. API configuration with interceptors
@@ -258,6 +289,7 @@ const handleSubmitOvertime = async (data) => {
 6. Environment configuration
 
 ### 🔄 **What's Next:**
+
 1. Integrate APIs to Dashboard (show real user data)
 2. Integrate APIs to Attendance (clock in/out functionality)
 3. Integrate APIs to Profile (load & update profile)
@@ -274,15 +306,16 @@ const handleSubmitOvertime = async (data) => {
 All services are ready to use! Just import and call them in your components.
 
 Example import:
+
 ```typescript
-import { 
-  authService, 
-  profileService, 
+import {
+  authService,
+  profileService,
   attendanceService,
   overtimeService,
   leaveService,
-  payslipService 
-} from '../../services';
+  payslipService,
+} from "../../services";
 ```
 
 **Next:** Start integrating APIs to pages one by one! 🎉

@@ -1,13 +1,13 @@
-import apiClient from './api.config';
+import apiClient from "./api.config";
 import {
   LeaveRequest,
   CreateLeaveRequest,
   LeaveBalance,
   ApiResponse,
-} from '../types/api.types';
+} from "../types/api.types";
 
 class LeaveService {
-  private basePath = '/employee/cuti';
+  private basePath = "/employee/cuti";
 
   /**
    * Get leave requests list
@@ -29,13 +29,13 @@ class LeaveService {
   async submitLeave(data: CreateLeaveRequest): Promise<LeaveRequest> {
     try {
       const formData = new FormData();
-      formData.append('leave_type', data.leave_type);
-      formData.append('start_date', data.start_date);
-      formData.append('end_date', data.end_date);
-      formData.append('reason', data.reason);
+      formData.append("leave_type", data.leave_type);
+      formData.append("start_date", data.start_date);
+      formData.append("end_date", data.end_date);
+      formData.append("reason", data.reason);
 
       if (data.attachment && data.attachment instanceof File) {
-        formData.append('attachment', data.attachment);
+        formData.append("attachment", data.attachment);
       }
 
       const response = await apiClient.post<ApiResponse<LeaveRequest>>(
@@ -43,7 +43,7 @@ class LeaveService {
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
         }
       );
@@ -91,7 +91,7 @@ class LeaveService {
   async getLeaveBalance(): Promise<LeaveBalance> {
     try {
       const response = await apiClient.get<ApiResponse<LeaveBalance>>(
-        '/employee/leave-balance'
+        "/employee/leave-balance"
       );
       return response.data.data;
     } catch (error) {
@@ -113,12 +113,14 @@ class LeaveService {
    * Handle API errors
    */
   private handleError(error: unknown): Error {
-    if (error && typeof error === 'object' && 'response' in error) {
-      const axiosError = error as { response?: { data?: { message?: string } } };
-      const message = axiosError.response?.data?.message || 'An error occurred';
+    if (error && typeof error === "object" && "response" in error) {
+      const axiosError = error as {
+        response?: { data?: { message?: string } };
+      };
+      const message = axiosError.response?.data?.message || "An error occurred";
       return new Error(message);
     }
-    return new Error('Network error. Please check your connection.');
+    return new Error("Network error. Please check your connection.");
   }
 }
 

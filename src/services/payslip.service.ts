@@ -1,12 +1,8 @@
-import apiClient from './api.config';
-import {
-  Payslip,
-  ApiResponse,
-  PaginatedResponse,
-} from '../types/api.types';
+import apiClient from "./api.config";
+import { Payslip, ApiResponse, PaginatedResponse } from "../types/api.types";
 
 class PayslipService {
-  private basePath = '/employee/payslip';
+  private basePath = "/employee/payslip";
 
   /**
    * Get payslip list
@@ -64,7 +60,7 @@ class PayslipService {
   async downloadPDF(id: number): Promise<Blob> {
     try {
       const response = await apiClient.get(`${this.basePath}/${id}/pdf`, {
-        responseType: 'blob',
+        responseType: "blob",
       });
       return response.data;
     } catch (error) {
@@ -79,14 +75,14 @@ class PayslipService {
     try {
       const blob = await this.downloadPDF(id);
       const url = window.URL.createObjectURL(blob);
-      
+
       // Open in new tab
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.target = '_blank';
+      link.target = "_blank";
       link.download = filename || `payslip-${id}.pdf`;
       link.click();
-      
+
       // Clean up
       window.URL.revokeObjectURL(url);
     } catch (error) {
@@ -98,9 +94,9 @@ class PayslipService {
    * Format currency
    */
   formatCurrency(amount: number): string {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
       minimumFractionDigits: 0,
     }).format(amount);
   }
@@ -110,22 +106,34 @@ class PayslipService {
    */
   formatMonthName(month: number): string {
     const months = [
-      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+      "Januari",
+      "Februari",
+      "Maret",
+      "April",
+      "Mei",
+      "Juni",
+      "Juli",
+      "Agustus",
+      "September",
+      "Oktober",
+      "November",
+      "Desember",
     ];
-    return months[month - 1] || '';
+    return months[month - 1] || "";
   }
 
   /**
    * Handle API errors
    */
   private handleError(error: unknown): Error {
-    if (error && typeof error === 'object' && 'response' in error) {
-      const axiosError = error as { response?: { data?: { message?: string } } };
-      const message = axiosError.response?.data?.message || 'An error occurred';
+    if (error && typeof error === "object" && "response" in error) {
+      const axiosError = error as {
+        response?: { data?: { message?: string } };
+      };
+      const message = axiosError.response?.data?.message || "An error occurred";
       return new Error(message);
     }
-    return new Error('Network error. Please check your connection.');
+    return new Error("Network error. Please check your connection.");
   }
 }
 

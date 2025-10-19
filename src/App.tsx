@@ -66,21 +66,19 @@ import "./theme/variables.css";
 setupIonicReact();
 
 // Protected Route Component
-const ProtectedRoute: React.FC<{ component: React.ComponentType; exact?: boolean; path: string }> = ({
-  component: Component,
-  ...rest
-}) => {
+const ProtectedRoute: React.FC<{
+  component: React.ComponentType;
+  exact?: boolean;
+  path: string;
+}> = ({ component: Component, ...rest }) => {
   const isAuthenticated = authService.isAuthenticated();
-  
+
   return (
     <Route
       {...rest}
-      render={(props) =>
-        isAuthenticated ? (
-          <Component {...props} />
-        ) : (
-          <Redirect to="/login" />
-        )
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      render={(props: any) =>
+        isAuthenticated ? <Component {...props} /> : <Redirect to="/login" />
       }
     />
   );
@@ -95,8 +93,12 @@ const App: React.FC = () => (
       </Route>
 
       {/* Main App with Tabs (Protected) */}
-      <ProtectedRoute exact path="/" component={() => <Redirect to="/dashboard" />} />
-      
+      <ProtectedRoute
+        exact
+        path="/"
+        component={() => <Redirect to="/dashboard" />}
+      />
+
       <IonTabs>
         <IonRouterOutlet>
           {/* Main Tab Routes */}
