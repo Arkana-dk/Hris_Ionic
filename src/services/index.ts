@@ -1,8 +1,14 @@
 // Export all services
-// DEVELOPMENT MODE: Using Mock Service (tanpa backend)
-// PRODUCTION MODE: Uncomment baris bawah dan comment baris mock
-export { default as authService } from "./auth.service.mock";
-// export { default as authService } from "./auth.service";
+// PRODUCTION MODE: Using Real API Service ONLY
+// Data diambil langsung dari database hakunamatata.my.id
+// Proxy di vite.config.ts akan handle CORS issue
+export { default as authService } from "./auth.service";
+
+// HYBRID MODE: Automatically switches between Real API and Mock
+// export { default as authService } from "./auth.service.hybrid";
+
+// DEVELOPMENT MODE: Using Mock Service only
+// export { default as authService } from "./auth.service.mock";
 
 export { default as profileService } from "./profile.service";
 export { default as attendanceService } from "./attendance.service";

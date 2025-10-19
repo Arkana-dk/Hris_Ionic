@@ -12,12 +12,35 @@ class AuthService {
    */
   async login(credentials: LoginRequest): Promise<LoginResponse> {
     try {
-      const response = await apiClient.post<ApiResponse<LoginResponse>>(
-        "/login",
-        credentials
-      );
+      const response = await apiClient.post("/login", credentials);
 
-      const { token, user } = response.data.data;
+      console.log("🔍 Raw Response:", response);
+      console.log("🔍 Response Data:", response.data);
+
+      // Handle different response formats
+      let token: string;
+      let user: User;
+
+      // Format 1: { data: { token, user } }
+      if (response.data.data) {
+        token = response.data.data.token;
+        user = response.data.data.user;
+      }
+      // Format 2: { token, user }
+      else if (response.data.token && response.data.user) {
+        token = response.data.token;
+        user = response.data.user;
+      }
+      // Format 3: { access_token, user }
+      else if (response.data.access_token) {
+        token = response.data.access_token;
+        user = response.data.user;
+      } else {
+        throw new Error("Invalid response format from server");
+      }
+
+      console.log("✅ Token:", token.substring(0, 20) + "...");
+      console.log("✅ User:", user);
 
       // Store token and user in localStorage
       localStorage.setItem("auth_token", token);
@@ -94,12 +117,33 @@ class AuthService {
    * Handle API errors
    */
   private handleError(error: unknown): Error {
-    const err = error as { response?: { data?: { message?: string } } };
+    console.error("🔴 AuthService Error:", error);
+
+    const err = error as {
+      response?: {
+        data?: { message?: string; errors?: Record<string, string[]> };
+        status?: number;
+      };
+      message?: string;
+    };
+
     if (err.response) {
+      const status = err.response.status;
       const message = err.response.data?.message || "An error occurred";
+      const errors = err.response.data?.errors;
+
+      console.error("Error Status:", status);
+      console.error("Error Message:", message);
+      if (errors) console.error("Validation Errors:", errors);
+
       return new Error(message);
     }
-    return new Error("Network error. Please check your connection.");
+
+    const message =
+      err.message || "Network error. Please check your connection.";
+    console.error("Network Error:", message);
+
+    return new Error(message);
   }
 }
 

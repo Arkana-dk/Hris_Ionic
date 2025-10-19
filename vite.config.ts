@@ -1,18 +1,41 @@
 /// <reference types="vitest" />
 
-import legacy from '@vitejs/plugin-legacy'
-import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
+import legacy from "@vitejs/plugin-legacy";
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    react(),
-    legacy()
-  ],
+  plugins: [react(), legacy()],
   test: {
     globals: true,
-    environment: 'jsdom',
-    setupFiles: './src/setupTests.ts',
-  }
-})
+    environment: "jsdom",
+    setupFiles: "./src/setupTests.ts",
+  },
+  server: {
+    proxy: {
+      "/api": {
+        target: "https://hakunamatata.my.id",
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, "/api"),
+        configure: (proxy) => {
+          proxy.on("error", (err) => {
+            console.log("proxy error", err);
+          });
+          proxy.on("proxyReq", (_proxyReq, req) => {
+            console.log("Sending Request to the Target:", req.method, req.url);
+          });
+          proxy.on("proxyRes", (proxyRes, req) => {
+            console.log(
+              "Received Response from the Target:",
+              proxyRes.statusCode,
+              req.url
+            );
+          });
+        },
+      },
+    },
+    cors: true,
+  },
+});
