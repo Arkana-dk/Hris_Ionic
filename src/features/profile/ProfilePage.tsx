@@ -9,6 +9,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useHistory } from "react-router-dom";
 import { profileService, authService } from "../../services";
+import { useAuth } from "../../contexts/AuthContext";
 import type { EmployeeProfile } from "../../types/api.types";
 import {
   faUser,
@@ -34,6 +35,7 @@ import {
 
 const ProfilePage: React.FC = () => {
   const history = useHistory();
+  const { logout: setAuthLogout } = useAuth();
   const [activeTab, setActiveTab] = useState<"info" | "stats">("info");
   const [profile, setProfile] = useState<EmployeeProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -62,6 +64,9 @@ const ProfilePage: React.FC = () => {
   const handleLogout = async () => {
     try {
       await authService.logout();
+      // Update auth context
+      setAuthLogout();
+      // Redirect to login
       history.replace("/login");
     } catch (err) {
       console.error("Logout failed:", err);

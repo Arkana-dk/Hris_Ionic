@@ -30,8 +30,8 @@ import { DocumentsPage } from "./features/documents";
 import ProfilePage from "./features/profile/ProfilePage";
 import { LoginPage } from "./features/auth";
 
-// Services
-import { authService } from "./services";
+// Context
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -65,113 +65,134 @@ import "./theme/variables.css";
 
 setupIonicReact();
 
-// Protected Route Component
-const ProtectedRoute: React.FC<{
-  component: React.ComponentType;
-  exact?: boolean;
-  path: string;
-}> = ({ component: Component, ...rest }) => {
-  const isAuthenticated = authService.isAuthenticated();
+const AppRoutes: React.FC = () => {
+  const { isAuthenticated } = useAuth();
+
+  console.log("🔄 AppRoutes render - isAuthenticated:", isAuthenticated);
 
   return (
-    <Route
-      {...rest}
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      render={(props: any) =>
-        isAuthenticated ? <Component {...props} /> : <Redirect to="/login" />
-      }
-    />
+    <IonReactRouter>
+      <IonRouterOutlet>
+        {/* Login Route - Redirect to dashboard if already authenticated */}
+        <Route exact path="/login">
+          {isAuthenticated ? <Redirect to="/dashboard" /> : <LoginPage />}
+        </Route>
+
+        {/* Root Route - Redirect based on auth */}
+        <Route exact path="/">
+          {isAuthenticated ? (
+            <>
+              {console.log("➡️ Redirecting to /dashboard")}
+              <Redirect to="/dashboard" />
+            </>
+          ) : (
+            <>
+              {console.log("➡️ Redirecting to /login")}
+              <Redirect to="/login" />
+            </>
+          )}
+        </Route>
+
+        {/* Protected Routes with Tabs */}
+        <Route
+          path={[
+            "/dashboard",
+            "/attendance",
+            "/profile",
+            "/pengajuan",
+            "/history",
+            "/kalender",
+            "/payslip",
+            "/documents",
+          ]}
+        >
+          {isAuthenticated ? (
+            <IonTabs>
+              <IonRouterOutlet>
+                {/* Main Tab Routes */}
+                <Route exact path="/dashboard" component={DashboardPage} />
+                <Route exact path="/attendance" component={AttendancePage} />
+                <Route exact path="/profile" component={ProfilePage} />
+
+                {/* Additional Feature Routes */}
+                <Route exact path="/pengajuan" component={PengajuanPage} />
+                <Route exact path="/history" component={HistoryPage} />
+                <Route exact path="/kalender" component={KalenderPage} />
+                <Route exact path="/payslip" component={PayslipPage} />
+                <Route exact path="/documents" component={DocumentsPage} />
+              </IonRouterOutlet>
+
+              {/* Modern Tab Bar */}
+              <IonTabBar slot="bottom" className="custom-tab-bar">
+                <IonTabButton
+                  tab="dashboard"
+                  href="/dashboard"
+                  className="custom-tab-button"
+                >
+                  <IonIcon
+                    aria-hidden="true"
+                    icon={homeOutline}
+                    className="tab-icon-outline"
+                  />
+                  <IonIcon
+                    aria-hidden="true"
+                    icon={home}
+                    className="tab-icon-filled"
+                  />
+                  <IonLabel>Home</IonLabel>
+                </IonTabButton>
+
+                <IonTabButton
+                  tab="attendance"
+                  href="/attendance"
+                  className="custom-tab-button"
+                >
+                  <IonIcon
+                    aria-hidden="true"
+                    icon={timeOutline}
+                    className="tab-icon-outline"
+                  />
+                  <IonIcon
+                    aria-hidden="true"
+                    icon={time}
+                    className="tab-icon-filled"
+                  />
+                  <IonLabel>Attendance</IonLabel>
+                </IonTabButton>
+
+                <IonTabButton
+                  tab="profile"
+                  href="/profile"
+                  className="custom-tab-button"
+                >
+                  <IonIcon
+                    aria-hidden="true"
+                    icon={personOutline}
+                    className="tab-icon-outline"
+                  />
+                  <IonIcon
+                    aria-hidden="true"
+                    icon={person}
+                    className="tab-icon-filled"
+                  />
+                  <IonLabel>Profile</IonLabel>
+                </IonTabButton>
+              </IonTabBar>
+            </IonTabs>
+          ) : (
+            <Redirect to="/login" />
+          )}
+        </Route>
+      </IonRouterOutlet>
+    </IonReactRouter>
   );
 };
 
 const App: React.FC = () => (
   <IonApp>
-    <IonReactRouter>
-      {/* Login Route (No Tabs) */}
-      <Route exact path="/login">
-        <LoginPage />
-      </Route>
-
-      {/* Main App with Tabs (Protected) */}
-      <ProtectedRoute
-        exact
-        path="/"
-        component={() => <Redirect to="/dashboard" />}
-      />
-
-      <IonTabs>
-        <IonRouterOutlet>
-          {/* Main Tab Routes */}
-          <ProtectedRoute exact path="/dashboard" component={DashboardPage} />
-          <ProtectedRoute exact path="/attendance" component={AttendancePage} />
-          <ProtectedRoute exact path="/profile" component={ProfilePage} />
-
-          {/* Additional Feature Routes */}
-          <ProtectedRoute exact path="/pengajuan" component={PengajuanPage} />
-          <ProtectedRoute exact path="/history" component={HistoryPage} />
-          <ProtectedRoute exact path="/kalender" component={KalenderPage} />
-          <ProtectedRoute exact path="/payslip" component={PayslipPage} />
-          <ProtectedRoute exact path="/documents" component={DocumentsPage} />
-        </IonRouterOutlet>
-
-        {/* Modern Tab Bar */}
-        <IonTabBar slot="bottom" className="custom-tab-bar">
-          <IonTabButton
-            tab="dashboard"
-            href="/dashboard"
-            className="custom-tab-button"
-          >
-            <IonIcon
-              aria-hidden="true"
-              icon={homeOutline}
-              className="tab-icon-outline"
-            />
-            <IonIcon
-              aria-hidden="true"
-              icon={home}
-              className="tab-icon-filled"
-            />
-            <IonLabel>Home</IonLabel>
-          </IonTabButton>
-
-          <IonTabButton
-            tab="attendance"
-            href="/attendance"
-            className="custom-tab-button"
-          >
-            <IonIcon
-              aria-hidden="true"
-              icon={timeOutline}
-              className="tab-icon-outline"
-            />
-            <IonIcon
-              aria-hidden="true"
-              icon={time}
-              className="tab-icon-filled"
-            />
-            <IonLabel>Attendance</IonLabel>
-          </IonTabButton>
-
-          <IonTabButton
-            tab="profile"
-            href="/profile"
-            className="custom-tab-button"
-          >
-            <IonIcon
-              aria-hidden="true"
-              icon={personOutline}
-              className="tab-icon-outline"
-            />
-            <IonIcon
-              aria-hidden="true"
-              icon={person}
-              className="tab-icon-filled"
-            />
-            <IonLabel>Profile</IonLabel>
-          </IonTabButton>
-        </IonTabBar>
-      </IonTabs>
-    </IonReactRouter>
+    <AuthProvider>
+      <AppRoutes />
+    </AuthProvider>
   </IonApp>
 );
 

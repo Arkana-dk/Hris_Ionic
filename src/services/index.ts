@@ -1,5 +1,9 @@
 // Export all services
-export { default as authService } from "./auth.service";
+// DEVELOPMENT MODE: Using Mock Service (tanpa backend)
+// PRODUCTION MODE: Uncomment baris bawah dan comment baris mock
+export { default as authService } from "./auth.service.mock";
+// export { default as authService } from "./auth.service";
+
 export { default as profileService } from "./profile.service";
 export { default as attendanceService } from "./attendance.service";
 export { default as overtimeService } from "./overtime.service";

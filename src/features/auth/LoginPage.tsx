@@ -9,9 +9,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useHistory } from "react-router-dom";
 import { authService } from "../../services";
+import { useAuth } from "../../contexts/AuthContext";
 
 const LoginPage: React.FC = () => {
   const history = useHistory();
+  const { login: setAuthLogin } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -48,8 +50,11 @@ const LoginPage: React.FC = () => {
       const result = await authService.login({ email, password });
       console.log("Login success:", result);
 
-      // Redirect to dashboard
-      history.push("/dashboard");
+      // Update auth context, then navigate after a micro delay
+      setAuthLogin();
+      setTimeout(() => {
+        history.replace("/dashboard");
+      }, 0);
     } catch (err) {
       console.error("Login error:", err);
       const error = err as Error;
