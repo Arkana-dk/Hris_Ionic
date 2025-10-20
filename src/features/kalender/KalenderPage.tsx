@@ -24,7 +24,7 @@ import {
   faCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { useHistory } from "react-router-dom";
-import { dashboardService } from "../../services";
+import { dashboardService, type EventData } from "../../services/dashboard.service";
 
 interface CalendarEvent {
   id: number;
@@ -77,10 +77,21 @@ const KalenderPage: React.FC = () => {
 
       // Call API to get events
       const response = await dashboardService.getTodayEvents();
-      const eventsData = Array.isArray(response)
-        ? response
-        : (response as any)?.data || [];
-      setEvents(eventsData);
+      
+      // Map EventData to CalendarEvent
+      const mappedEvents: CalendarEvent[] = response.map((event: EventData) => ({
+        id: event.id,
+        title: event.title,
+        description: event.description || "",
+        date: event.date,
+        start_time: event.time,
+        end_time: undefined,
+        type: "meeting" as const,
+        location: undefined,
+        all_day: false,
+      }));
+      
+      setEvents(mappedEvents);
     } catch (err) {
       console.error("Failed to load events:", err);
       setError(
