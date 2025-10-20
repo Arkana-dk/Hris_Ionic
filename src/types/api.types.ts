@@ -275,6 +275,26 @@ export interface CalendarEvent {
 }
 
 // ============================================
+// Document Types
+// ============================================
+
+export interface Document {
+  id: number;
+  employee_id: number;
+  title: string;
+  description: string;
+  category: "contract" | "certificate" | "policy" | "announcement" | "other";
+  type: "pdf" | "docx" | "xlsx" | "jpg" | "png" | "other";
+  file_path: string;
+  file_size: number;
+  uploaded_at: string;
+  document_date?: string;
+  status: "active" | "expired" | "pending";
+  created_at: string;
+  updated_at?: string;
+}
+
+// ============================================
 // Error Types
 // ============================================
 

@@ -19,6 +19,7 @@ import {
   faCertificate,
   faFileShield,
   faBullhorn,
+  faDownload,
   faFile,
 } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -40,118 +41,93 @@ const DocumentsPage: React.FC = () => {
   const [error, setError] = useState("");
   const [downloading, setDownloading] = useState<number | null>(null);
 
+  // Mock data untuk fallback
+  const mockDocuments: DocumentType[] = [
+    {
+      id: 1,
+      employee_id: 1,
+      title: "Kontrak Kerja 2025",
+      description: "Perjanjian kontrak kerja karyawan tetap periode 2025",
+      category: "contract",
+      type: "pdf",
+      file_path: "/documents/contract-2025.pdf",
+      file_size: 2516582,
+      uploaded_at: "2025-01-01T08:00:00Z",
+      document_date: "2025-01-01",
+      status: "active",
+      created_at: "2025-01-01T08:00:00Z",
+    },
+    {
+      id: 2,
+      employee_id: 1,
+      title: "Sertifikat UI/UX Design",
+      description: "Sertifikat pelatihan UI/UX Design dari Google",
+      category: "certificate",
+      type: "pdf",
+      file_path: "/documents/certificate-uiux.pdf",
+      file_size: 876953,
+      uploaded_at: "2024-06-16T09:00:00Z",
+      document_date: "2024-06-15",
+      status: "active",
+      created_at: "2024-06-16T09:00:00Z",
+    },
+    {
+      id: 3,
+      employee_id: 1,
+      title: "Company Policy Handbook",
+      description: "Pedoman kebijakan perusahaan terbaru",
+      category: "policy",
+      type: "pdf",
+      file_path: "/documents/policy-handbook.pdf",
+      file_size: 1258291,
+      uploaded_at: "2024-03-20T10:00:00Z",
+      document_date: "2024-03-20",
+      status: "active",
+      created_at: "2024-03-20T10:00:00Z",
+    },
+    {
+      id: 4,
+      employee_id: 1,
+      title: "Pengumuman Event Akhir Tahun",
+      description: "Detail acara perayaan akhir tahun perusahaan",
+      category: "announcement",
+      type: "pdf",
+      file_path: "/documents/announcement-event.pdf",
+      file_size: 460800,
+      uploaded_at: "2024-12-20T14:00:00Z",
+      document_date: "2024-12-28",
+      status: "active",
+      created_at: "2024-12-20T14:00:00Z",
+    },
+  ];
+
   useEffect(() => {
-    // Mock data untuk fallback
-    const mockDocuments: DocumentType[] = [
-      {
-        id: 1,
-        employee_id: 1,
-        title: "Kontrak Kerja 2025",
-        description: "Perjanjian kontrak kerja karyawan tetap periode 2025",
-        category: "contract",
-        type: "pdf",
-        file_path: "/documents/contract-2025.pdf",
-        file_size: 2516582,
-        uploaded_at: "2025-01-01T08:00:00Z",
-        document_date: "2025-01-01",
-        status: "active",
-        created_at: "2025-01-01T08:00:00Z",
-      },
-      {
-        id: 2,
-        employee_id: 1,
-        title: "Sertifikat UI/UX Design",
-        description: "Sertifikat pelatihan UI/UX Design dari Google",
-        category: "certificate",
-        type: "pdf",
-        file_path: "/documents/certificate-uiux.pdf",
-        file_size: 876953,
-        uploaded_at: "2024-06-16T09:00:00Z",
-        document_date: "2024-06-15",
-        status: "active",
-        created_at: "2024-06-16T09:00:00Z",
-      },
-      {
-        id: 3,
-        employee_id: 1,
-        title: "Company Policy Handbook",
-        description: "Pedoman kebijakan perusahaan terbaru",
-        category: "policy",
-        type: "pdf",
-        file_path: "/documents/policy-handbook.pdf",
-        file_size: 1258291,
-        uploaded_at: "2024-03-20T10:00:00Z",
-        document_date: "2024-03-20",
-        status: "active",
-        created_at: "2024-03-20T10:00:00Z",
-      },
-      {
-        id: 4,
-        employee_id: 1,
-        title: "Pengumuman Event Akhir Tahun",
-        description: "Detail acara perayaan akhir tahun perusahaan",
-        category: "announcement",
-        type: "pdf",
-        file_path: "/documents/announcement-event.pdf",
-        file_size: 460800,
-        uploaded_at: "2024-12-20T14:00:00Z",
-        document_date: "2024-12-28",
-        status: "active",
-        created_at: "2024-12-20T14:00:00Z",
-      },
-    ];
-
-    const loadDocuments = async () => {
-      try {
-        setLoading(true);
-        setError("");
-
-        const response = await documentService.getDocuments({
-          category:
-            selectedCategory !== "all"
-              ? (selectedCategory as
-                  | "contract"
-                  | "certificate"
-                  | "policy"
-                  | "announcement"
-                  | "other")
-              : undefined,
-          status: "active",
-        });
-
-        setDocuments(Array.isArray(response) ? response : response.data || []);
-      } catch (err) {
-        console.error("Error fetching documents:", err);
-        setError("Gagal memuat dokumen. Menggunakan data demo.");
-        setDocuments(mockDocuments);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadDocuments();
+    fetchDocuments();
   }, [selectedCategory]);
 
-  const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => {
+  const fetchDocuments = async () => {
     try {
+      setLoading(true);
       setError("");
+
       const response = await documentService.getDocuments({
         category:
-          selectedCategory !== "all"
-            ? (selectedCategory as
-                | "contract"
-                | "certificate"
-                | "policy"
-                | "announcement"
-                | "other")
-            : undefined,
+          selectedCategory !== "all" ? (selectedCategory as any) : undefined,
         status: "active",
       });
+
       setDocuments(Array.isArray(response) ? response : response.data || []);
-    } catch (err) {
-      console.error("Error refreshing documents:", err);
-      setError("Gagal memuat ulang dokumen");
+    } catch (err: any) {
+      console.error("Error fetching documents:", err);
+      setError("Gagal memuat dokumen. Menggunakan data demo.");
+      setDocuments(mockDocuments);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => {
+    await fetchDocuments();
     event.detail.complete();
   };
 
@@ -170,7 +146,7 @@ const DocumentsPage: React.FC = () => {
       a.click();
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error downloading document:", err);
       setError("Gagal mengunduh dokumen");
     } finally {
@@ -218,6 +194,19 @@ const DocumentsPage: React.FC = () => {
         return timeOutline;
       default:
         return alertCircle;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "active":
+        return "text-green-500";
+      case "expired":
+        return "text-red-500";
+      case "pending":
+        return "text-yellow-500";
+      default:
+        return "text-gray-500";
     }
   };
 

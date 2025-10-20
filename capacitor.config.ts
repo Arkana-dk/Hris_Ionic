@@ -6,8 +6,14 @@ const config: CapacitorConfig = {
   webDir: "dist",
   server: {
     androidScheme: "https",
+    cleartext: true,
+    allowNavigation: [
+      "https://hakunamatata.my.id",
+      "https://hakunamatata.my.id/*",
+    ],
   },
   android: {
+    allowMixedContent: true,
     buildOptions: {
       keystorePath: undefined,
       keystoreAlias: undefined,

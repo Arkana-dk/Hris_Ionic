@@ -1,4 +1,4 @@
-import apiClient from "./api.config";
+import httpService from "./http.service";
 import {
   LoginRequest,
   LoginResponse,
@@ -12,29 +12,29 @@ class AuthService {
    */
   async login(credentials: LoginRequest): Promise<LoginResponse> {
     try {
-      const response = await apiClient.post("/login", credentials);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const response = await httpService.post<any>("/login", credentials);
 
       console.log("🔍 Raw Response:", response);
-      console.log("🔍 Response Data:", response.data);
 
       // Handle different response formats
       let token: string;
       let user: User;
 
       // Format 1: { data: { token, user } }
-      if (response.data.data) {
-        token = response.data.data.token;
-        user = response.data.data.user;
+      if (response.data) {
+        token = response.data.token || response.data.access_token;
+        user = response.data.user;
       }
       // Format 2: { token, user }
-      else if (response.data.token && response.data.user) {
-        token = response.data.token;
-        user = response.data.user;
+      else if (response.token && response.user) {
+        token = response.token || response.access_token;
+        user = response.user;
       }
       // Format 3: { access_token, user }
-      else if (response.data.access_token) {
-        token = response.data.access_token;
-        user = response.data.user;
+      else if (response.access_token) {
+        token = response.access_token;
+        user = response.user;
       } else {
         throw new Error("Invalid response format from server");
       }
@@ -57,7 +57,7 @@ class AuthService {
    */
   async logout(): Promise<void> {
     try {
-      await apiClient.post("/logout");
+      await httpService.post("/logout");
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
@@ -72,8 +72,8 @@ class AuthService {
    */
   async me(): Promise<User> {
     try {
-      const response = await apiClient.get<ApiResponse<User>>("/me");
-      const user = response.data.data;
+      const response = await httpService.get<ApiResponse<User>>("/me");
+      const user = response.data;
 
       // Update user in localStorage
       localStorage.setItem("user", JSON.stringify(user));
