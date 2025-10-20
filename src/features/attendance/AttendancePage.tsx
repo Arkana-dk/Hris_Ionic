@@ -8,7 +8,7 @@ import {
 } from "@ionic/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { attendanceService } from "../../services";
-import type { Attendance } from "../../types/api.types";
+import type { Attendance, AttendanceStatistics } from "../../types/api.types";
 import {
   faMapMarkerAlt,
   faClock,
@@ -34,6 +34,9 @@ const AttendancePage: React.FC = () => {
 
   // API State
   const [attendanceHistory, setAttendanceHistory] = useState<Attendance[]>([]);
+  const [statistics, setStatistics] = useState<AttendanceStatistics | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -48,14 +51,27 @@ const AttendancePage: React.FC = () => {
   const loadAttendanceData = async () => {
     try {
       setLoading(true);
-      // attendanceService.getHistory returns Attendance[] directly, not PaginatedResponse
-      const attendanceData = await attendanceService.getHistory({
-        start_date: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
-          .toISOString()
-          .split("T")[0],
-        end_date: new Date().toISOString().split("T")[0],
-      });
+
+      // Load both history and statistics in parallel
+      const [attendanceData, statsData] = await Promise.all([
+        attendanceService
+          .getHistory({
+            start_date: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+              .toISOString()
+              .split("T")[0],
+            end_date: new Date().toISOString().split("T")[0],
+          })
+          .catch(() => []),
+        attendanceService
+          .getStatistics({
+            month: new Date().getMonth() + 1,
+            year: new Date().getFullYear(),
+          })
+          .catch(() => null),
+      ]);
+
       setAttendanceHistory(attendanceData);
+      setStatistics(statsData);
 
       // Check if already clocked in today
       const today = new Date().toISOString().split("T")[0];
@@ -186,12 +202,16 @@ const AttendancePage: React.FC = () => {
     }
   };
 
+  // Use real statistics from API, fallback to static
   const monthlyStats = {
-    present: 18,
-    late: 2,
-    absent: 0,
-    totalHours: 168.5,
-    onTimeRate: 90,
+    present: statistics?.present_days || 18,
+    late: statistics?.late_days || 2,
+    absent: statistics?.absent_days || 0,
+    totalHours:
+      typeof statistics?.total_hours === "string"
+        ? parseFloat(statistics.total_hours.split(":")[0] || "168")
+        : statistics?.total_hours || 168.5,
+    onTimeRate: statistics?.on_time_rate || 90,
   };
 
   const formatTime = (date: Date) => {

@@ -131,6 +131,18 @@ export interface PresensiRequest {
   attachment?: File | string;
 }
 
+export interface AttendanceStatistics {
+  month?: string;
+  total_days?: number;
+  working_days?: number;
+  present_days: number;
+  late_days: number;
+  absent_days: number;
+  total_hours: string | number;
+  average_hours?: string;
+  on_time_rate?: number;
+}
+
 // ============================================
 // Overtime Types
 // ============================================

@@ -8,22 +8,27 @@ import {
 } from "@ionic/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faArrowLeft,
   faFileContract,
   faCertificate,
   faFileShield,
   faBullhorn,
   faDownload,
-  faArrowLeft,
 } from "@fortawesome/free-solid-svg-icons";
 import { useHistory } from "react-router-dom";
 
 interface Document {
   id: string;
   title: string;
+  description: string;
   category: "contract" | "certificate" | "policy" | "announcement";
+  type: "pdf" | "docx" | "xlsx" | "jpg" | "png";
   date: string;
+  uploadedDate: string;
   size: string;
-  status: "active" | "expired";
+  status: "active" | "expired" | "pending";
+  url?: string;
+  thumbnail?: string;
 }
 
 const DocumentsPage: React.FC = () => {
@@ -34,49 +39,67 @@ const DocumentsPage: React.FC = () => {
   const documents: Document[] = [
     {
       id: "1",
-      title: "Employment Contract 2025",
+      title: "Kontrak Kerja 2025",
+      description: "Perjanjian kontrak kerja karyawan tetap periode 2025",
       category: "contract",
+      type: "pdf",
       date: "2025-01-01",
+      uploadedDate: "2025-01-01",
       size: "2.4 MB",
       status: "active",
     },
     {
       id: "2",
-      title: "UI/UX Design Certificate",
+      title: "Sertifikat UI/UX Design",
+      description: "Sertifikat pelatihan UI/UX Design dari Google",
       category: "certificate",
+      type: "pdf",
       date: "2024-06-15",
+      uploadedDate: "2024-06-16",
       size: "856 KB",
       status: "active",
     },
     {
       id: "3",
       title: "Company Policy Handbook",
+      description: "Pedoman kebijakan perusahaan terbaru",
       category: "policy",
+      type: "pdf",
       date: "2024-03-20",
+      uploadedDate: "2024-03-20",
       size: "1.2 MB",
       status: "active",
     },
     {
       id: "4",
-      title: "New Year Event Announcement",
+      title: "Pengumuman Event Akhir Tahun",
+      description: "Detail acara perayaan akhir tahun perusahaan",
       category: "announcement",
+      type: "pdf",
       date: "2024-12-28",
+      uploadedDate: "2024-12-20",
       size: "450 KB",
       status: "active",
     },
     {
       id: "5",
-      title: "Figma Certification",
+      title: "Sertifikat Figma Advanced",
+      description: "Sertifikat pelatihan Figma tingkat lanjut",
       category: "certificate",
+      type: "pdf",
       date: "2024-05-10",
+      uploadedDate: "2024-05-11",
       size: "720 KB",
       status: "active",
     },
     {
       id: "6",
       title: "Work From Home Policy",
+      description: "Kebijakan dan prosedur bekerja dari rumah",
       category: "policy",
+      type: "pdf",
       date: "2024-02-15",
+      uploadedDate: "2024-02-15",
       size: "980 KB",
       status: "active",
     },

@@ -31,7 +31,7 @@ import ProfilePage from "./features/profile/ProfilePage";
 import { LoginPage } from "./features/auth";
 
 // Context
-import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { AuthProvider, useAuth } from "./contexts";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";

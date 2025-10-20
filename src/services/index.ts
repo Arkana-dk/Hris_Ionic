@@ -15,6 +15,7 @@ export { default as attendanceService } from "./attendance.service";
 export { default as overtimeService } from "./overtime.service";
 export { default as leaveService } from "./leave.service";
 export { default as payslipService } from "./payslip.service";
+export { dashboardService } from "./dashboard.service";
 
 // Export API client for custom usage
 export { default as apiClient } from "./api.config";

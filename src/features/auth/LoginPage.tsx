@@ -9,7 +9,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useHistory } from "react-router-dom";
 import { authService } from "../../services";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../../contexts";
 
 const LoginPage: React.FC = () => {
   const history = useHistory();

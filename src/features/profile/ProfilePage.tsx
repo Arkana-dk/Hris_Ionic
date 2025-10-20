@@ -1,15 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   IonContent,
   IonPage,
   IonAvatar,
   IonSpinner,
   IonToast,
+  IonModal,
+  IonButton,
+  IonInput,
+  IonTextarea,
 } from "@ionic/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useHistory } from "react-router-dom";
 import { profileService, authService } from "../../services";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../../contexts";
 import type { EmployeeProfile } from "../../types/api.types";
 import {
   faUser,
@@ -17,7 +21,6 @@ import {
   faPhone,
   faCalendar,
   faFileAlt,
-  faCog,
   faSignOutAlt,
   faChevronRight,
   faShieldAlt,
@@ -35,12 +38,33 @@ import {
 
 const ProfilePage: React.FC = () => {
   const history = useHistory();
-  const { logout: setAuthLogout } = useAuth();
+  const {
+    user: authUser,
+    logout: setAuthLogout,
+    updateUser,
+    refreshUser,
+  } = useAuth();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [activeTab, setActiveTab] = useState<"info" | "stats">("info");
   const [profile, setProfile] = useState<EmployeeProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastColor, setToastColor] = useState<"danger" | "success">("danger");
+
+  // Edit profile modal states
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editLoading, setEditLoading] = useState(false);
+  const [editForm, setEditForm] = useState({
+    phone: "",
+    address: "",
+    emergency_contact: "",
+  });
+
+  // Avatar upload states
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   // Load profile data on mount
   useEffect(() => {
@@ -52,12 +76,104 @@ const ProfilePage: React.FC = () => {
       setLoading(true);
       const profileData = await profileService.getProfile();
       setProfile(profileData);
+
+      // Update edit form with current data
+      setEditForm({
+        phone: profileData.phone || "",
+        address: profileData.address || "",
+        emergency_contact: profileData.emergency_contact || "",
+      });
     } catch (err) {
       console.error("Failed to load profile:", err);
       setError("Failed to load profile data");
       setShowToast(true);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleAvatarChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      setToastMessage("Please select an image file");
+      setToastColor("danger");
+      setShowToast(true);
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setToastMessage("Image size should be less than 5MB");
+      setToastColor("danger");
+      setShowToast(true);
+      return;
+    }
+
+    try {
+      setUploadingAvatar(true);
+      const avatarUrl = await profileService.uploadAvatar(file);
+
+      // Update local profile
+      if (profile) {
+        const updatedProfile = { ...profile, avatar: avatarUrl };
+        setProfile(updatedProfile);
+      }
+
+      // Refresh user in auth context
+      await refreshUser();
+
+      setToastMessage("Profile picture updated successfully!");
+      setToastColor("success");
+      setShowToast(true);
+    } catch (err) {
+      console.error("Failed to upload avatar:", err);
+      setToastMessage("Failed to upload profile picture");
+      setToastColor("danger");
+      setShowToast(true);
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
+  const handleEditProfile = () => {
+    setShowEditModal(true);
+  };
+
+  const handleSaveProfile = async () => {
+    try {
+      setEditLoading(true);
+
+      const updatedProfile = await profileService.updateProfile(editForm);
+      setProfile(updatedProfile);
+
+      // Update auth context
+      if (authUser) {
+        updateUser({
+          ...authUser,
+          phone: updatedProfile.phone,
+        });
+      }
+
+      setToastMessage("Profile updated successfully!");
+      setToastColor("success");
+      setShowToast(true);
+      setShowEditModal(false);
+    } catch (err) {
+      console.error("Failed to update profile:", err);
+      setToastMessage("Failed to update profile");
+      setToastColor("danger");
+      setShowToast(true);
+    } finally {
+      setEditLoading(false);
     }
   };
 
@@ -229,8 +345,11 @@ const ProfilePage: React.FC = () => {
                     Manage your account
                   </p>
                 </div>
-                <button className="w-12 h-12 bg-white/20 hover:bg-white/30 backdrop-blur-lg rounded-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 shadow-lg">
-                  <FontAwesomeIcon icon={faCog} className="text-xl" />
+                <button
+                  onClick={handleEditProfile}
+                  className="w-12 h-12 bg-white/20 hover:bg-white/30 backdrop-blur-lg rounded-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 shadow-lg"
+                >
+                  <FontAwesomeIcon icon={faPencil} className="text-xl" />
                 </button>
               </div>
             </div>
@@ -247,9 +366,25 @@ const ProfilePage: React.FC = () => {
                       <img alt="Profile" src={user.avatar} />
                     </IonAvatar>
                     {/* Edit button with gradient */}
-                    <button className="absolute bottom-1 right-1 w-10 h-10 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-full flex items-center justify-center text-white shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 border-2 border-white">
-                      <FontAwesomeIcon icon={faPencil} className="text-sm" />
+                    <button
+                      onClick={handleAvatarClick}
+                      disabled={uploadingAvatar}
+                      className="absolute bottom-1 right-1 w-10 h-10 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-full flex items-center justify-center text-white shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 border-2 border-white disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {uploadingAvatar ? (
+                        <IonSpinner name="crescent" className="w-4 h-4" />
+                      ) : (
+                        <FontAwesomeIcon icon={faPencil} className="text-sm" />
+                      )}
                     </button>
+                    {/* Hidden file input */}
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarChange}
+                      className="hidden"
+                    />
                   </div>
 
                   <h2 className="text-2xl font-black text-gray-900 mb-2 tracking-tight">
@@ -498,12 +633,130 @@ const ProfilePage: React.FC = () => {
         <IonToast
           isOpen={showToast}
           onDidDismiss={() => setShowToast(false)}
-          message={error}
+          message={toastMessage || error}
           duration={3000}
           position="top"
-          color="danger"
+          color={toastColor}
         />
       </IonContent>
+
+      {/* Edit Profile Modal */}
+      <IonModal
+        isOpen={showEditModal}
+        onDidDismiss={() => setShowEditModal(false)}
+        className="font-inter"
+      >
+        <div className="flex flex-col h-full bg-gray-50">
+          {/* Modal Header */}
+          <div className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-5 py-6 shadow-lg">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-2xl font-black">Edit Profile</h2>
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-xl flex items-center justify-center transition-all duration-300"
+              >
+                <span className="text-2xl">×</span>
+              </button>
+            </div>
+            <p className="text-white/80 text-sm">
+              Update your personal information
+            </p>
+          </div>
+
+          {/* Modal Content */}
+          <div className="flex-1 overflow-y-auto p-5 space-y-4">
+            {/* Phone Number */}
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">
+                Phone Number
+              </label>
+              <IonInput
+                value={editForm.phone}
+                onIonInput={(e) =>
+                  setEditForm({ ...editForm, phone: e.detail.value || "" })
+                }
+                placeholder="Enter phone number"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500 bg-white"
+                type="tel"
+              />
+            </div>
+
+            {/* Address */}
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">
+                Address
+              </label>
+              <IonTextarea
+                value={editForm.address}
+                onIonInput={(e) =>
+                  setEditForm({ ...editForm, address: e.detail.value || "" })
+                }
+                placeholder="Enter your address"
+                rows={3}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500 bg-white"
+              />
+            </div>
+
+            {/* Emergency Contact */}
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">
+                Emergency Contact
+              </label>
+              <IonInput
+                value={editForm.emergency_contact}
+                onIonInput={(e) =>
+                  setEditForm({
+                    ...editForm,
+                    emergency_contact: e.detail.value || "",
+                  })
+                }
+                placeholder="Enter emergency contact number"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500 bg-white"
+                type="tel"
+              />
+            </div>
+
+            {/* Info Note */}
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+              <p className="text-xs text-blue-700 font-medium">
+                ℹ️ Some information like name, email, and employee ID can only
+                be updated by HR department.
+              </p>
+            </div>
+          </div>
+
+          {/* Modal Footer */}
+          <div className="p-5 bg-white border-t border-gray-200 space-y-3">
+            <IonButton
+              expand="block"
+              onClick={handleSaveProfile}
+              disabled={editLoading}
+              className="h-12 font-bold"
+              style={{
+                "--background": "linear-gradient(to right, #8b5cf6, #6366f1)",
+              }}
+            >
+              {editLoading ? (
+                <div className="flex items-center gap-2">
+                  <IonSpinner name="crescent" className="w-5 h-5" />
+                  <span>Saving...</span>
+                </div>
+              ) : (
+                "Save Changes"
+              )}
+            </IonButton>
+            <IonButton
+              expand="block"
+              fill="outline"
+              onClick={() => setShowEditModal(false)}
+              disabled={editLoading}
+              className="h-12 font-bold"
+            >
+              Cancel
+            </IonButton>
+          </div>
+        </div>
+      </IonModal>
     </IonPage>
   );
 };
