@@ -71,75 +71,11 @@ const PayslipPage: React.FC = () => {
       setPayslips(Array.isArray(response) ? response : response.data);
     } catch (err) {
       console.error("Failed to load payslips:", err);
-      setError("Gagal memuat data payslip");
+      setError(
+        "Gagal memuat data payslip. Silakan coba lagi atau hubungi IT Support."
+      );
       setShowToast(true);
-
-      // Fallback data
-      setPayslips([
-        {
-          id: 1,
-          employee_id: 1,
-          period: "October 2025",
-          month: 10,
-          year: 2025,
-          basic_salary: 10000000,
-          allowances: [
-            {
-              id: 1,
-              name: "Tunjangan Transport",
-              amount: 1000000,
-              type: "fixed",
-            },
-            { id: 2, name: "Tunjangan Makan", amount: 1500000, type: "fixed" },
-            { id: 3, name: "Tunjangan Jabatan", amount: 500000, type: "fixed" },
-          ],
-          deductions: [
-            { id: 4, name: "PPh 21", amount: 1500000, type: "percentage" },
-            { id: 5, name: "BPJS Kesehatan", amount: 500000, type: "fixed" },
-            {
-              id: 6,
-              name: "BPJS Ketenagakerjaan",
-              amount: 250000,
-              type: "fixed",
-            },
-          ],
-          gross_salary: 15000000,
-          net_salary: 12750000,
-          status: "paid",
-          created_at: "2025-10-01T00:00:00Z",
-        },
-        {
-          id: 2,
-          employee_id: 1,
-          period: "September 2025",
-          month: 9,
-          year: 2025,
-          basic_salary: 10000000,
-          allowances: [
-            {
-              id: 1,
-              name: "Tunjangan Transport",
-              amount: 1000000,
-              type: "fixed",
-            },
-            { id: 2, name: "Tunjangan Makan", amount: 1500000, type: "fixed" },
-          ],
-          deductions: [
-            { id: 4, name: "PPh 21", amount: 1425000, type: "percentage" },
-            { id: 5, name: "BPJS Kesehatan", amount: 500000, type: "fixed" },
-            {
-              id: 6,
-              name: "BPJS Ketenagakerjaan",
-              amount: 250000,
-              type: "fixed",
-            },
-          ],
-          gross_salary: 14500000,
-          net_salary: 12325000,
-          status: "paid",
-          created_at: "2025-09-01T00:00:00Z",
-        },
-      ]);
+      setPayslips([]);
     } finally {
       setLoading(false);
     }

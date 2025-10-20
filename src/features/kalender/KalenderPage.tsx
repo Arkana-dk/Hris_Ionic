@@ -24,6 +24,7 @@ import {
   faCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { useHistory } from "react-router-dom";
+import { dashboardService } from "../../services";
 
 interface CalendarEvent {
   id: number;
@@ -74,74 +75,19 @@ const KalenderPage: React.FC = () => {
       setLoading(true);
       setError("");
 
-      // In real app: call API
-      // const data = await calendarService.getEvents({
-      //   year: currentDate.getFullYear(),
-      //   month: currentDate.getMonth() + 1
-      // });
-
-      // Fallback data
-      setEvents([
-        {
-          id: 1,
-          title: "Rapat Tim Marketing",
-          description: "Diskusi strategi marketing Q4",
-          date: "2025-10-21",
-          start_time: "09:00",
-          end_time: "11:00",
-          type: "meeting",
-          location: "Meeting Room A",
-          all_day: false,
-        },
-        {
-          id: 2,
-          title: "Cuti Tahunan",
-          description: "Liburan keluarga",
-          date: "2025-10-23",
-          start_time: undefined,
-          end_time: undefined,
-          type: "leave",
-          location: undefined,
-          all_day: true,
-        },
-        {
-          id: 3,
-          title: "Training Software Development",
-          description: "React Advanced Training",
-          date: "2025-10-25",
-          start_time: "13:00",
-          end_time: "17:00",
-          type: "training",
-          location: "Training Center",
-          all_day: false,
-        },
-        {
-          id: 4,
-          title: "Libur Nasional",
-          description: "Hari Sumpah Pemuda",
-          date: "2025-10-28",
-          start_time: undefined,
-          end_time: undefined,
-          type: "holiday",
-          location: undefined,
-          all_day: true,
-        },
-        {
-          id: 5,
-          title: "Team Building",
-          description: "Outbound activity",
-          date: "2025-10-30",
-          start_time: "08:00",
-          end_time: "17:00",
-          type: "other",
-          location: "Puncak Resort",
-          all_day: false,
-        },
-      ]);
+      // Call API to get events
+      const response = await dashboardService.getTodayEvents();
+      const eventsData = Array.isArray(response)
+        ? response
+        : (response as any)?.data || [];
+      setEvents(eventsData);
     } catch (err) {
       console.error("Failed to load events:", err);
-      setError("Gagal memuat data kalender");
+      setError(
+        "Gagal memuat data kalender. Silakan coba lagi atau hubungi IT Support."
+      );
       setShowToast(true);
+      setEvents([]);
     } finally {
       setLoading(false);
     }

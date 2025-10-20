@@ -90,25 +90,10 @@ const AttendancePage: React.FC = () => {
       }
     } catch (err) {
       console.error("Failed to load attendance:", err);
-      // Fallback to static data
-      setAttendanceHistory([
-        {
-          id: "1",
-          tanggal: "2025-10-17",
-          jam_masuk: "08:45",
-          jam_keluar: "17:30",
-          status: "present",
-          keterangan: "",
-        },
-        {
-          id: "2",
-          tanggal: "2025-10-16",
-          jam_masuk: "09:15",
-          jam_keluar: "17:45",
-          status: "late",
-          keterangan: "",
-        },
-      ]);
+      setAttendanceHistory([]);
+      setError(
+        "Gagal memuat data kehadiran. Silakan coba lagi atau hubungi IT Support."
+      );
     } finally {
       setLoading(false);
     }

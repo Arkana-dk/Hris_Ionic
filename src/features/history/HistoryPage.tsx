@@ -110,29 +110,18 @@ const HistoryPage: React.FC = () => {
       }
     } catch (err) {
       console.error("Failed to load history:", err);
-      setError("Gagal memuat data history");
+      setError(
+        "Gagal memuat data history. Silakan coba lagi atau hubungi IT Support."
+      );
       setShowToast(true);
 
-      // Use fallback data
+      // Clear data on error
       if (activeTab === "attendance") {
-        setAttendanceHistory([
-          {
-            id: 1,
-            tanggal: "2025-10-18",
-            jam_masuk: "08:30",
-            jam_keluar: "17:15",
-            status: "present",
-            clock_in_location: "Jakarta Office",
-          },
-          {
-            id: 2,
-            tanggal: "2025-10-17",
-            jam_masuk: "09:15",
-            jam_keluar: "17:30",
-            status: "late",
-            clock_in_location: "Jakarta Office",
-          },
-        ]);
+        setAttendanceHistory([]);
+      } else if (activeTab === "leave") {
+        setLeaveHistory([]);
+      } else if (activeTab === "overtime") {
+        setOvertimeHistory([]);
       }
     } finally {
       setLoading(false);
