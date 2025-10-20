@@ -44,103 +44,12 @@ class HttpService {
     if (token) console.log("🔑 Token:", token.substring(0, 20) + "...");
 
     try {
-      // For native platforms, use XMLHttpRequest (more reliable)
-      if (this.isNative) {
-        console.log("📱 Using XMLHttpRequest (Native - More Reliable)");
-        return await this.xhrRequest<T>(options, fullUrl, headers);
-      } else {
-        // For web, use Fetch API
-        console.log("🌐 Using Fetch API (Web)");
-        return await this.fetchRequest<T>(options, fullUrl, headers);
-      }
+      // Use Fetch API for both native and web (universal support)
+      return await this.fetchRequest<T>(options, fullUrl, headers);
     } catch (error: any) {
       console.error("❌ HTTP Error:", error);
       throw this.handleError(error);
     }
-  }
-
-  /**
-   * XMLHttpRequest for native platforms (more reliable than fetch)
-   */
-  private async xhrRequest<T>(
-    options: RequestOptions,
-    url: string,
-    headers: Record<string, string>
-  ): Promise<T> {
-    return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-
-      // Build URL with query params
-      let finalUrl = url;
-      if (options.params) {
-        const searchParams = new URLSearchParams(options.params);
-        finalUrl = `${url}?${searchParams.toString()}`;
-      }
-
-      xhr.open(options.method, finalUrl, true);
-
-      // Set headers
-      Object.keys(headers).forEach((key) => {
-        xhr.setRequestHeader(key, headers[key]);
-      });
-
-      xhr.onload = () => {
-        console.log("✅ XHR Response:", xhr.status, xhr.statusText);
-
-        try {
-          const data = JSON.parse(xhr.responseText);
-          console.log("📦 Data:", JSON.stringify(data).substring(0, 200));
-
-          if (xhr.status >= 200 && xhr.status < 300) {
-            resolve(data as T);
-          } else {
-            reject({
-              response: {
-                status: xhr.status,
-                data: data,
-              },
-              message: `HTTP ${xhr.status}: ${data?.message || xhr.statusText}`,
-            });
-          }
-        } catch {
-          if (xhr.status >= 200 && xhr.status < 300) {
-            resolve(xhr.responseText as any);
-          } else {
-            reject({
-              response: {
-                status: xhr.status,
-                data: xhr.responseText,
-              },
-              message: `HTTP ${xhr.status}: ${xhr.statusText}`,
-            });
-          }
-        }
-      };
-
-      xhr.onerror = () => {
-        console.error("❌ XHR Error:", xhr.statusText);
-        reject({
-          message: "Network request failed. Please check your internet connection.",
-        });
-      };
-
-      xhr.ontimeout = () => {
-        console.error("❌ XHR Timeout");
-        reject({
-          message: "Request timeout. Please try again.",
-        });
-      };
-
-      // Set timeout (30 seconds)
-      xhr.timeout = 30000;
-
-      // Send request
-      if (options.data && ["POST", "PUT", "PATCH"].includes(options.method)) {
-        xhr.send(JSON.stringify(options.data));
-      } else {
-        xhr.send();
-      }
-    });
   }
 
   /**
