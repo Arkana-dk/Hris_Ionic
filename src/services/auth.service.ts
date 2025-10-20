@@ -1,4 +1,4 @@
-import apiClient from "./api.config";
+import httpService from "./http.service";
 import {
   LoginRequest,
   LoginResponse,
@@ -12,12 +12,35 @@ class AuthService {
    */
   async login(credentials: LoginRequest): Promise<LoginResponse> {
     try {
-      const response = await apiClient.post<ApiResponse<LoginResponse>>(
-        "/login",
-        credentials
-      );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const response = await httpService.post<any>("/login", credentials);
 
-      const { token, user } = response.data.data;
+      console.log("🔍 Raw Response:", response);
+
+      // Handle different response formats
+      let token: string;
+      let user: User;
+
+      // Format 1: { data: { token, user } }
+      if (response.data) {
+        token = response.data.token || response.data.access_token;
+        user = response.data.user;
+      }
+      // Format 2: { token, user }
+      else if (response.token && response.user) {
+        token = response.token || response.access_token;
+        user = response.user;
+      }
+      // Format 3: { access_token, user }
+      else if (response.access_token) {
+        token = response.access_token;
+        user = response.user;
+      } else {
+        throw new Error("Invalid response format from server");
+      }
+
+      console.log("✅ Token:", token.substring(0, 20) + "...");
+      console.log("✅ User:", user);
 
       // Store token and user in localStorage
       localStorage.setItem("auth_token", token);
@@ -34,7 +57,7 @@ class AuthService {
    */
   async logout(): Promise<void> {
     try {
-      await apiClient.post("/logout");
+      await httpService.post("/logout");
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
@@ -49,8 +72,8 @@ class AuthService {
    */
   async me(): Promise<User> {
     try {
-      const response = await apiClient.get<ApiResponse<User>>("/me");
-      const user = response.data.data;
+      const response = await httpService.get<ApiResponse<User>>("/me");
+      const user = response.data;
 
       // Update user in localStorage
       localStorage.setItem("user", JSON.stringify(user));
@@ -94,12 +117,33 @@ class AuthService {
    * Handle API errors
    */
   private handleError(error: unknown): Error {
-    const err = error as { response?: { data?: { message?: string } } };
+    console.error("🔴 AuthService Error:", error);
+
+    const err = error as {
+      response?: {
+        data?: { message?: string; errors?: Record<string, string[]> };
+        status?: number;
+      };
+      message?: string;
+    };
+
     if (err.response) {
+      const status = err.response.status;
       const message = err.response.data?.message || "An error occurred";
+      const errors = err.response.data?.errors;
+
+      console.error("Error Status:", status);
+      console.error("Error Message:", message);
+      if (errors) console.error("Validation Errors:", errors);
+
       return new Error(message);
     }
-    return new Error("Network error. Please check your connection.");
+
+    const message =
+      err.message || "Network error. Please check your connection.";
+    console.error("Network Error:", message);
+
+    return new Error(message);
   }
 }
 

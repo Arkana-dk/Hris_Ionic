@@ -131,6 +131,18 @@ export interface PresensiRequest {
   attachment?: File | string;
 }
 
+export interface AttendanceStatistics {
+  month?: string;
+  total_days?: number;
+  working_days?: number;
+  present_days: number;
+  late_days: number;
+  absent_days: number;
+  total_hours: string | number;
+  average_hours?: string;
+  on_time_rate?: number;
+}
+
 // ============================================
 // Overtime Types
 // ============================================
@@ -260,6 +272,26 @@ export interface CalendarEvent {
   end_time?: string;
   description?: string;
   location?: string;
+}
+
+// ============================================
+// Document Types
+// ============================================
+
+export interface Document {
+  id: number;
+  employee_id: number;
+  title: string;
+  description: string;
+  category: "contract" | "certificate" | "policy" | "announcement" | "other";
+  type: "pdf" | "docx" | "xlsx" | "jpg" | "png" | "other";
+  file_path: string;
+  file_size: number;
+  uploaded_at: string;
+  document_date?: string;
+  status: "active" | "expired" | "pending";
+  created_at: string;
+  updated_at?: string;
 }
 
 // ============================================

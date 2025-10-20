@@ -9,7 +9,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useHistory } from "react-router-dom";
 import { authService } from "../../services";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../../contexts";
 
 const LoginPage: React.FC = () => {
   const history = useHistory();
@@ -167,20 +167,48 @@ const LoginPage: React.FC = () => {
                 )}
               </button>
 
-              {/* Demo Credentials Info */}
-              <div className="mt-6 p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-100">
-                <p className="text-xs font-bold text-gray-700 mb-2">
-                  🔑 Demo Credentials:
+              {/* Real API Credentials Info */}
+              <div className="mt-6 p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl border border-green-100">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-xs font-bold text-gray-700">
+                    🔑 Login dengan Database Real:
+                  </p>
+                  <span className="text-[10px] px-2 py-0.5 bg-green-500 text-white rounded-full font-bold">
+                    REAL API
+                  </span>
+                </div>
+                <p className="text-xs text-gray-600 font-medium mb-2">
+                  Gunakan credentials yang valid dari database
+                  hakunamatata.my.id
                 </p>
-                <p className="text-xs text-gray-600 font-medium">
-                  Email:{" "}
-                  <span className="font-bold text-gray-800">
-                    admin@example.com
+                <p className="text-[10px] text-gray-500 italic">
+                  💡 Hubungi admin untuk mendapatkan email & password yang
+                  terdaftar
+                </p>
+              </div>
+
+              {/* API Status Info */}
+              <div className="mt-3 p-3 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-100">
+                <p className="text-[10px] font-bold text-gray-700 mb-1">
+                  📡 API Connection:
+                </p>
+                <p className="text-[10px] text-gray-600 font-medium">
+                  🔗 Backend:{" "}
+                  <span className="font-mono text-gray-800">
+                    hakunamatata.my.id
                   </span>
                 </p>
-                <p className="text-xs text-gray-600 font-medium">
-                  Password:{" "}
-                  <span className="font-bold text-gray-800">password</span>
+                <p className="text-[10px] text-gray-600 font-medium">
+                  ✅ Mode:{" "}
+                  <span className="font-bold text-green-600">
+                    Direct Database Access
+                  </span>
+                </p>
+                <p className="text-[10px] text-gray-600 font-medium">
+                  🛡️ CORS:{" "}
+                  <span className="font-bold text-blue-600">
+                    Handled by Proxy
+                  </span>
                 </p>
               </div>
             </form>

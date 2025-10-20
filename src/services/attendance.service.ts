@@ -1,6 +1,7 @@
 import apiClient from "./api.config";
 import {
   Attendance,
+  AttendanceStatistics,
   ClockInRequest,
   AttendanceRequest,
   PresensiRequest,
@@ -128,6 +129,24 @@ class AttendanceService {
     try {
       const response = await apiClient.get<ApiResponse<AttendanceRequest>>(
         `${this.basePath}/presensi/requests/${id}`
+      );
+      return response.data.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
+   * Get attendance statistics
+   */
+  async getStatistics(params?: {
+    month?: number;
+    year?: number;
+  }): Promise<AttendanceStatistics> {
+    try {
+      const response = await apiClient.get<ApiResponse<AttendanceStatistics>>(
+        `${this.basePath}/attendance/statistics`,
+        { params }
       );
       return response.data.data;
     } catch (error) {

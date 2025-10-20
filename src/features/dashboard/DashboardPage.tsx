@@ -22,53 +22,71 @@ import {
   faCloudSun,
 } from "@fortawesome/free-solid-svg-icons";
 import { useHistory } from "react-router-dom";
-import { profileService } from "../../services";
-import type { EmployeeProfile } from "../../types/api.types";
+import { useAuth } from "../../contexts";
+import { dashboardService } from "../../services";
+import type {
+  DashboardData,
+  EventData,
+  AnnouncementData,
+} from "../../services/dashboard.service";
 
 const DashboardPage: React.FC = () => {
   const history = useHistory();
+  const { user: authUser, isAuthenticated } = useAuth();
 
   // State management
-  const [profile, setProfile] = useState<EmployeeProfile | null>(null);
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(
+    null
+  );
+  const [todayEvent, setTodayEvent] = useState<EventData | null>(null);
+  const [announcements, setAnnouncements] = useState<AnnouncementData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showToast, setShowToast] = useState(false);
 
   // Load data on component mount
   useEffect(() => {
-    loadDashboardData();
-  }, []);
+    if (isAuthenticated) {
+      loadDashboardData();
+    }
+  }, [isAuthenticated]);
 
   const loadDashboardData = async () => {
     try {
       setLoading(true);
 
-      // Load profile data
-      const profileData = await profileService.getProfile().catch(() => null);
+      // Load all dashboard data
+      const [dashboard, events, announcementsData] = await Promise.all([
+        dashboardService.getDashboard().catch(() => null),
+        dashboardService.getTodayEvents().catch(() => []),
+        dashboardService.getAnnouncements(3).catch(() => []),
+      ]);
 
-      if (profileData) {
-        setProfile(profileData);
-      }
+      setDashboardData(dashboard);
+      setTodayEvent(events.length > 0 ? events[0] : null);
+      setAnnouncements(announcementsData);
     } catch (err) {
       console.error("Error loading dashboard:", err);
-      setError("Failed to load data");
+      setError("Failed to load dashboard data");
       setShowToast(true);
     } finally {
       setLoading(false);
     }
   };
 
-  // Fallback to static data if API fails
+  // Use user from auth context with fallbacks
   const user = {
-    name: profile?.name || "ILHAM HIDAYATULLAH",
-    position: profile?.position || "UI/UX Designer",
-    tenure: "11 months",
+    name: authUser?.name || "User",
+    position: authUser?.position || "Employee",
     avatar:
-      profile?.avatar || "https://ionicframework.com/docs/img/demos/avatar.svg",
-    fullName: profile?.full_name || "ILHAM HIDAYATULLAH",
+      authUser?.avatar ||
+      "https://ionicframework.com/docs/img/demos/avatar.svg",
+    fullName: authUser?.name || "Employee",
     jobTitle:
-      profile?.job_title ||
-      "Bridgestone Karawang (Facility Management) - QQ FINFEEL CLEANING SERVICE OFFICER",
+      dashboardData?.user?.job_title ||
+      authUser?.position ||
+      authUser?.department ||
+      "Position",
   };
 
   const getGreeting = () => {
@@ -206,48 +224,65 @@ const DashboardPage: React.FC = () => {
 
             {/* What's Up Today Section - Modern Design */}
             <div className="relative px-5 -mt-8">
-              <div className="bg-white rounded-2xl shadow-xl p-4 border border-gray-100 hover:shadow-2xl transition-all duration-300 animate-fadeInUp">
-                <div className="flex items-center gap-4">
-                  {/* Modern Date Circle */}
-                  <div className="relative flex-shrink-0">
-                    <div className="w-16 h-16 bg-gradient-to-br from-violet-500 via-purple-500 to-indigo-500 rounded-2xl flex items-center justify-center shadow-lg shadow-violet-500/30 transform hover:scale-105 transition-all duration-300">
-                      <span className="text-white font-black text-2xl drop-shadow-md">
-                        21
+              {todayEvent ? (
+                <div className="bg-white rounded-2xl shadow-xl p-4 border border-gray-100 hover:shadow-2xl transition-all duration-300 animate-fadeInUp">
+                  <div className="flex items-center gap-4">
+                    {/* Modern Date Circle */}
+                    <div className="relative flex-shrink-0">
+                      <div className="w-16 h-16 bg-gradient-to-br from-violet-500 via-purple-500 to-indigo-500 rounded-2xl flex items-center justify-center shadow-lg shadow-violet-500/30 transform hover:scale-105 transition-all duration-300">
+                        <span className="text-white font-black text-2xl drop-shadow-md">
+                          {new Date().getDate()}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Event Info with Icon */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                        <p className="text-gray-500 text-[10px] font-bold uppercase tracking-wider">
+                          Today's Schedule
+                        </p>
+                      </div>
+                      <h3 className="font-black text-gray-800 text-sm mb-0.5 truncate">
+                        {todayEvent.title}
+                      </h3>
+                      <div className="flex items-center gap-1.5">
+                        <FontAwesomeIcon
+                          icon={faClock}
+                          className="text-violet-500 text-xs"
+                        />
+                        <p className="font-bold text-gray-600 text-xs">
+                          {todayEvent.time}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Modern See Details Button */}
+                    <button
+                      onClick={() => handleNavigate("/kalender")}
+                      className="flex-shrink-0 px-4 py-2 bg-gradient-to-r from-violet-500 to-indigo-500 hover:from-violet-600 hover:to-indigo-600 text-white text-xs font-bold rounded-xl shadow-lg shadow-violet-500/30 hover:shadow-xl hover:shadow-violet-500/40 active:scale-95 transition-all duration-300"
+                    >
+                      Details
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-white rounded-2xl shadow-xl p-4 border border-gray-100 animate-fadeInUp">
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 bg-gradient-to-br from-gray-300 to-gray-400 rounded-2xl flex items-center justify-center">
+                      <span className="text-white font-black text-2xl">
+                        {new Date().getDate()}
                       </span>
                     </div>
-                  </div>
-
-                  {/* Event Info with Icon */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-                      <p className="text-gray-500 text-[10px] font-bold uppercase tracking-wider">
-                        Today's Schedule
-                      </p>
-                    </div>
-                    <h3 className="font-black text-gray-800 text-sm mb-0.5 truncate">
-                      UI/UX Team Huddle
-                    </h3>
-                    <div className="flex items-center gap-1.5">
-                      <FontAwesomeIcon
-                        icon={faClock}
-                        className="text-violet-500 text-xs"
-                      />
-                      <p className="font-bold text-gray-600 text-xs">
-                        09:00am - 10:00am
+                    <div className="flex-1">
+                      <p className="text-gray-500 text-sm font-medium">
+                        No events scheduled for today
                       </p>
                     </div>
                   </div>
-
-                  {/* Modern See Details Button */}
-                  <button
-                    onClick={() => handleNavigate("/kalender")}
-                    className="flex-shrink-0 px-4 py-2 bg-gradient-to-r from-violet-500 to-indigo-500 hover:from-violet-600 hover:to-indigo-600 text-white text-xs font-bold rounded-xl shadow-lg shadow-violet-500/30 hover:shadow-xl hover:shadow-violet-500/40 active:scale-95 transition-all duration-300"
-                  >
-                    Details
-                  </button>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Office Services - 8 items */}
@@ -307,24 +342,48 @@ const DashboardPage: React.FC = () => {
               <h2 className="text-gray-800 font-bold text-xl mb-4">
                 Announcements
               </h2>
-              <div className="bg-white rounded-xl p-4 flex space-x-4 items-start shadow-md hover-lift animate-fadeInUp">
-                {/* Icon/Image Placeholder */}
-                <div className="bg-gradient-to-br from-indigo-100 to-purple-100 w-16 h-16 rounded-xl flex-shrink-0 flex items-center justify-center">
-                  <span className="text-3xl">📰</span>
-                </div>
+              {announcements.length > 0 ? (
+                <div className="space-y-3">
+                  {announcements.map((announcement, index) => (
+                    <div
+                      key={announcement.id}
+                      className="bg-white rounded-xl p-4 flex space-x-4 items-start shadow-md hover-lift animate-fadeInUp"
+                      style={{ animationDelay: `${index * 0.1}s` }}
+                    >
+                      {/* Icon/Image Placeholder */}
+                      <div className="bg-gradient-to-br from-indigo-100 to-purple-100 w-16 h-16 rounded-xl flex-shrink-0 flex items-center justify-center">
+                        <span className="text-3xl">📰</span>
+                      </div>
 
-                {/* Content */}
-                <div className="flex-1">
-                  <h4 className="text-gray-900 font-semibold mb-1">
-                    Good News! Use Free Udemy Online Course
-                  </h4>
-                  <p className="text-gray-500 text-xs leading-relaxed">
-                    Dear A-Team, to be more productive now you can access free
-                    online courses at Udemy. You can improve your skills
-                    anytime!
+                      {/* Content */}
+                      <div className="flex-1">
+                        <h4 className="text-gray-900 font-semibold mb-1">
+                          {announcement.title}
+                        </h4>
+                        <p className="text-gray-500 text-xs leading-relaxed">
+                          {announcement.content}
+                        </p>
+                        <p className="text-gray-400 text-[10px] mt-2">
+                          {new Date(announcement.created_at).toLocaleDateString(
+                            "id-ID",
+                            {
+                              day: "numeric",
+                              month: "long",
+                              year: "numeric",
+                            }
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="bg-white rounded-xl p-4 text-center shadow-md">
+                  <p className="text-gray-500 text-sm">
+                    No announcements at this time
                   </p>
                 </div>
-              </div>
+              )}
             </div>
           </>
         )}
