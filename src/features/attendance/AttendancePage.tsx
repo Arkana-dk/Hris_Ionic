@@ -205,12 +205,12 @@ const AttendancePage: React.FC = () => {
         {!loading && (
           <>
             {/* Compact Header */}
-            <div className="relative bg-gradient-to-br from-teal-500 via-cyan-500 to-blue-500 text-white px-5 pt-6 pb-16 overflow-hidden">
+            <div className="relative bg-gradient-to-br from-teal-500 via-cyan-500 to-blue-500 text-white px-5 pt-6 pb-6 overflow-hidden">
               {/* Subtle Background */}
               <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-3xl animate-pulse-slow"></div>
 
               {/* Top Navigation */}
-              <div className="relative flex items-center justify-between mb-4">
+              <div className="relative flex items-center justify-between mb-2 mt-4">
                 <button
                   onClick={() => history.goBack()}
                   className="p-2 hover:bg-white/20 rounded-xl transition-all duration-300 active:scale-90"
