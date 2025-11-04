@@ -1,4 +1,4 @@
-import httpService from "./http.service";
+import apiClient from "./api.client";
 import {
   LoginRequest,
   LoginResponse,
@@ -8,12 +8,12 @@ import {
 
 class AuthService {
   /**
-   * Login user
+   * Login user dengan Laravel Sanctum
    */
   async login(credentials: LoginRequest): Promise<LoginResponse> {
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const response = await httpService.post<any>("/login", credentials);
+      const response = await apiClient.post<any>("/login", credentials);
 
       console.log("🔍 Raw Response:", response);
 
@@ -57,13 +57,16 @@ class AuthService {
    */
   async logout(): Promise<void> {
     try {
-      await httpService.post("/logout");
+      await apiClient.post("/logout");
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
       // Clear local storage regardless of API response
       localStorage.removeItem("auth_token");
       localStorage.removeItem("user");
+
+      // Reset CSRF token
+      apiClient.resetCsrf();
     }
   }
 
@@ -72,7 +75,7 @@ class AuthService {
    */
   async me(): Promise<User> {
     try {
-      const response = await httpService.get<ApiResponse<User>>("/me");
+      const response = await apiClient.get<ApiResponse<User>>("/me");
       const user = response.data;
 
       // Update user in localStorage

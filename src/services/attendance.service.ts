@@ -80,12 +80,13 @@ class AttendanceService {
   }
 
   /**
-   * Get attendance requests list
+   * Get attendance requests list (history)
+   * GET /employee/attendance/requests/history
    */
   async getRequests(): Promise<AttendanceRequest[]> {
     try {
       const response = await apiClient.get<ApiResponse<AttendanceRequest[]>>(
-        `${this.basePath}/presensi/requests`
+        `${this.basePath}/attendance/requests/history`
       );
       return response.data.data;
     } catch (error) {
@@ -95,6 +96,7 @@ class AttendanceService {
 
   /**
    * Submit attendance request (izin/sakit/etc)
+   * POST /employee/attendance/requests/create
    */
   async submitRequest(data: PresensiRequest): Promise<AttendanceRequest> {
     try {
@@ -108,7 +110,7 @@ class AttendanceService {
       }
 
       const response = await apiClient.post<ApiResponse<AttendanceRequest>>(
-        `${this.basePath}/presensi/requests`,
+        `${this.basePath}/attendance/requests/create`,
         formData,
         {
           headers: {
