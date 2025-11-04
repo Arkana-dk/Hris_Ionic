@@ -1,0 +1,259 @@
+```
+╔════════════════════════════════════════════════════════════════════════════╗
+║                    🏠 LOCALHOST DEVELOPMENT SETUP                          ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          CONFIGURATION STATUS                               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ✅ Remote API (hakunamatata.my.id)     →  DISABLED                        │
+│  ✅ Local API (localhost:8000)          →  ENABLED                         │
+│  ✅ Environment Files                   →  CREATED                         │
+│  ✅ Switch Scripts                      →  READY                           │
+│  ✅ Documentation                       →  COMPLETE                        │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          ARCHITECTURE DIAGRAM                               │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+    ┌──────────────────────────┐         ┌──────────────────────────┐
+    │   IONIC FRONTEND APP     │         │   LARAVEL BACKEND API    │
+    │  (Mobile/Web Client)     │         │   (REST API Server)      │
+    ├──────────────────────────┤         ├──────────────────────────┤
+    │                          │         │                          │
+    │  📱 localhost:5173       │         │  🌐 localhost:8000       │
+    │                          │         │                          │
+    │  ⚛️  React + TypeScript  │         │  🐘 PHP + Laravel 11     │
+    │  🎨 Ionic Components     │         │  🗄️  MySQL Database      │
+    │  📦 Vite Build           │         │  🔐 Sanctum Auth         │
+    │                          │         │                          │
+    │  Services:               │         │  Controllers:            │
+    │  • authService       ───────────────>  • AuthController       │
+    │  • attendanceService ───────────────>  • AttendanceController │
+    │  • overtimeService   ───────────────>  • OvertimeController   │
+    │  • leaveService      ───────────────>  • LeaveController      │
+    │  • payslipService    ───────────────>  • PayslipController    │
+    │                          │         │                          │
+    └──────────────────────────┘         └──────────────────────────┘
+              │                                      │
+              │  HTTP Requests (JSON)                │
+              └──────────────────────────────────────┘
+
+    Request Flow:
+    1. User action di UI → Service method called
+    2. Service → axios.post/get/put → api.config.ts
+    3. api.config.ts → HTTP Request → Laravel routes/api.php
+    4. Laravel Controller → Process → Database
+    5. Response (JSON) ← Database ← Controller
+    6. UI Update ← Service ← axios response
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          API ENDPOINTS MAPPING                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+╔═══════════════════════════════════════════════════════════════════════════╗
+║                         AUTHENTICATION                                    ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+  POST   /api/login              ← authService.login()
+  POST   /api/logout             ← authService.logout()
+  GET    /api/me                 ← authService.getCurrentUser()
+
+╔═══════════════════════════════════════════════════════════════════════════╗
+║                         ATTENDANCE MANAGEMENT                             ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+  GET    /api/employee/attendance              ← attendanceService.getList()
+  POST   /api/employee/attendance              ← attendanceService.clockIn()
+  GET    /api/employee/attendance/history      ← attendanceService.getHistory()
+  POST   /api/employee/attendance/requests/create  ← attendanceService.submitRequest()
+
+╔═══════════════════════════════════════════════════════════════════════════╗
+║                         OVERTIME MANAGEMENT                               ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+  GET    /api/employee/overtime-request        ← overtimeService.getList()
+  POST   /api/employee/overtime-request        ← overtimeService.submitOvertime()
+  GET    /api/employee/overtime-request/history ← overtimeService.getHistory()
+
+╔═══════════════════════════════════════════════════════════════════════════╗
+║                         LEAVE MANAGEMENT                                  ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+  GET    /api/employee/cuti                    ← leaveService.getList()
+  POST   /api/employee/cuti                    ← leaveService.submitLeave()
+  GET    /api/employee/cuti/history            ← leaveService.getHistory()
+
+╔═══════════════════════════════════════════════════════════════════════════╗
+║                         PAYSLIP MANAGEMENT                                ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+  GET    /api/employee/payslip                 ← payslipService.getList()
+  GET    /api/employee/payslip/:id             ← payslipService.getDetail()
+  GET    /api/employee/payslip/:id/pdf         ← payslipService.downloadPDF()
+  GET    /api/employee/payslip/history         ← payslipService.getHistory()
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          ENVIRONMENT SWITCHING                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+    LOCALHOST MODE                   REMOTE MODE
+    ═════════════════               ═══════════════
+    
+    .env.local                      .env.remote
+    ├─ localhost:8000/api           ├─ hakunamatata.my.id/api
+    ├─ Local Laravel                ├─ Remote Server
+    └─ Development ✅                └─ Production
+
+    Quick Switch:
+    ┌─────────────────────────┐    ┌─────────────────────────┐
+    │ switch-env.bat local    │    │ switch-env.bat remote   │
+    │         ↓               │    │         ↓               │
+    │  Copy .env.local to .env│    │  Copy .env.remote to .env│
+    └─────────────────────────┘    └─────────────────────────┘
+              ↓                                  ↓
+         npm run dev                        npm run dev
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          DEVELOPMENT WORKFLOW                               │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+    Step 1: Start Backend
+    ─────────────────────
+    Terminal 1:
+    $ cd /path/to/hris-fix
+    $ php artisan serve
+    ✅ Server running on http://127.0.0.1:8000
+
+    Step 2: Start Frontend
+    ──────────────────────
+    Terminal 2:
+    $ cd c:/Users/ACER/Documents/Hris_Ionic
+    $ npm run dev
+    ✅ Local: http://localhost:5173/
+
+    Step 3: Test & Develop
+    ──────────────────────
+    Browser:
+    1. Open http://localhost:5173
+    2. Login: alice@example.com / password
+    3. Check Console for API calls
+    4. Test features
+    5. Make changes → Auto reload
+
+    Step 4: Debug
+    ─────────────
+    Backend Logs:
+    $ tail -f storage/logs/laravel.log
+    
+    Frontend Console:
+    F12 → Console tab
+    
+    API Testing:
+    Postman / Thunder Client
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          FILE STRUCTURE                                     │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+    Hris_Ionic/
+    ├── 📄 .env                              ← Active config (LOCALHOST)
+    ├── 📄 .env.local                        ← Localhost backup
+    ├── 📄 .env.remote                       ← Remote backup
+    ├── 🔧 switch-env.bat                    ← Windows switcher
+    ├── 🔧 switch-env.sh                     ← Linux/Mac switcher
+    ├── 📖 LOCALHOST_DEVELOPMENT_GUIDE.md    ← Complete guide
+    ├── 📖 QUICK_START.md                    ← Quick setup
+    ├── 📖 LOCALHOST_CONFIGURATION_SUMMARY.md ← Status overview
+    ├── 📊 VISUAL_ARCHITECTURE.txt           ← This file
+    │
+    ├── src/
+    │   ├── services/
+    │   │   ├── 🔧 api.config.ts             ← Base URL config
+    │   │   ├── 🔐 auth.service.ts           ← Authentication
+    │   │   ├── ⏰ attendance.service.ts     ← Attendance
+    │   │   ├── ⏱️  overtime.service.ts      ← Overtime
+    │   │   ├── 📅 leave.service.ts          ← Leave/Cuti
+    │   │   ├── 💰 payslip.service.ts        ← Payslip
+    │   │   └── 🔄 shift-change.service.ts   ← Shift Change
+    │   │
+    │   ├── pages/
+    │   │   ├── 🏠 DashboardPage.tsx
+    │   │   ├── ⏰ AttendancePage.tsx
+    │   │   ├── 📝 PengajuanPage.tsx
+    │   │   ├── 💰 PayslipPage.tsx
+    │   │   └── 📄 DocumentsPage.tsx
+    │   │
+    │   └── features/
+    │       ├── attendance/
+    │       ├── pengajuan/
+    │       ├── payslip/
+    │       └── documents/
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          TESTING CHECKLIST                                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+    □ Backend server running (port 8000)
+    □ Frontend server running (port 5173)
+    □ Database migrated & seeded
+    □ Can access http://localhost:5173
+    □ Can login with test credentials
+    □ Token saved in localStorage
+    □ Dashboard loads successfully
+    □ Attendance page loads
+    □ Can view attendance history
+    □ Can submit attendance request
+    □ Overtime page loads
+    □ Leave page loads
+    □ Payslip page loads
+    □ Console shows API calls to localhost:8000
+    □ No CORS errors
+    □ No 401 Unauthorized errors
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          QUICK COMMANDS                                     │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+    BACKEND (Laravel)
+    ─────────────────
+    php artisan serve                    # Start server
+    php artisan route:list              # List API routes
+    php artisan migrate:fresh --seed    # Reset database
+    php artisan tinker                  # REPL console
+    tail -f storage/logs/laravel.log    # Watch logs
+
+    FRONTEND (Ionic)
+    ────────────────
+    npm run dev                         # Start dev server
+    npm run build                       # Build production
+    npm run lint                        # Run linter
+    switch-env.bat local               # Use localhost
+    switch-env.bat remote              # Use remote
+
+    DEBUGGING
+    ─────────
+    F12                                # Open DevTools
+    Console → Network → XHR            # See API calls
+    localStorage.getItem('auth_token') # Check token
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║                             SUMMARY                                        ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+✅ Configuration: COMPLETE
+✅ API Endpoint: http://localhost:8000/api
+✅ Remote API: DISABLED (hakunamatata.my.id)
+✅ Services: ALL CONFIGURED
+✅ Documentation: READY
+✅ Switch Scripts: AVAILABLE
+
+🎯 Next Action:
+   1. Start backend: php artisan serve
+   2. Start frontend: npm run dev
+   3. Test login at http://localhost:5173
+
+🚀 Ready for Development!
+
+╔════════════════════════════════════════════════════════════════════════════╗
+║                    Happy Coding! 🎉                                        ║
+╚════════════════════════════════════════════════════════════════════════════╝
+```

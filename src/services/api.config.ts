@@ -1,9 +1,20 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig } from "axios";
 
-// API Base URL - sesuaikan dengan backend Laravel Anda
-// Vite uses import.meta.env instead of process.env
+// ========================================
+// 🔧 LOCALHOST DEVELOPMENT MODE
+// ========================================
+// Backend Laravel Local: http://localhost:8000
+// Repository: https://github.com/Arkana-dk/hris-fix
+// REMOTE API (hakunamatata.my.id) DISABLED
+
+// API Base URL - LOCAL DEVELOPMENT
 export const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "https://hakunamatata.my.id/api";
+  import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+
+console.log("🏠 API Configuration:");
+console.log("  Mode: LOCAL DEVELOPMENT");
+console.log("  Base URL:", API_BASE_URL);
+console.log("  Remote API: DISABLED");
 
 // Create axios instance
 const apiClient: AxiosInstance = axios.create({
@@ -13,6 +24,8 @@ const apiClient: AxiosInstance = axios.create({
     "Content-Type": "application/json",
     Accept: "application/json",
   },
+  // CORS settings for localhost
+  withCredentials: false, // Set to true if using Sanctum cookies
 });
 
 // Request interceptor - add auth token

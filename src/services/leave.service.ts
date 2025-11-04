@@ -7,10 +7,11 @@ import {
 } from "../types/api.types";
 
 class LeaveService {
-  private basePath = "/employee/cuti";
+  private basePath = "/employee/leave";
 
   /**
    * Get leave requests list
+   * GET /employee/leave
    */
   async getLeaveRequests(): Promise<LeaveRequest[]> {
     try {
@@ -25,6 +26,7 @@ class LeaveService {
 
   /**
    * Submit leave request
+   * POST /employee/leave/request
    */
   async submitLeave(data: CreateLeaveRequest): Promise<LeaveRequest> {
     try {
@@ -39,7 +41,7 @@ class LeaveService {
       }
 
       const response = await apiClient.post<ApiResponse<LeaveRequest>>(
-        this.basePath,
+        `${this.basePath}/request`,
         formData,
         {
           headers: {

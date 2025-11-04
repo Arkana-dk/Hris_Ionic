@@ -6,10 +6,11 @@ import {
 } from "../types/api.types";
 
 class OvertimeService {
-  private basePath = "/employee/overtime-request";
+  private basePath = "/employee/overtime-requests";
 
   /**
    * Get overtime requests list
+   * GET /employee/overtime-requests
    */
   async getOvertimeRequests(): Promise<OvertimeRequest[]> {
     try {
@@ -24,11 +25,12 @@ class OvertimeService {
 
   /**
    * Submit overtime request
+   * POST /employee/overtime-requests/create
    */
   async submitOvertime(data: CreateOvertimeRequest): Promise<OvertimeRequest> {
     try {
       const response = await apiClient.post<ApiResponse<OvertimeRequest>>(
-        this.basePath,
+        `${this.basePath}/create`,
         data
       );
       return response.data.data;
