@@ -35,6 +35,8 @@ class ApiClient {
   private isNative = Capacitor.isNativePlatform();
   private csrfToken: string | null = null;
   private csrfFetched = false;
+  private _token: string | null = null;
+  private _tokenFetched = false;
 
   constructor() {
     if (DEBUG_MODE) {
@@ -42,6 +44,114 @@ class ApiClient {
       console.log("📱 Platform:", this.isNative ? "Native (Mobile)" : "Web");
       console.log("🌐 API Base URL:", API_BASE_URL);
       console.log("🔗 API URL:", API_URL);
+    }
+  }
+
+  /**
+   * Get _token from Laravel for login form
+   * Required for hakunamatata.my.id login endpoint
+   */
+  async getToken(): Promise<string | null> {
+    if (this._tokenFetched && this._token) {
+      return this._token;
+    }
+
+    // Ensure CSRF cookie is available before requesting form token
+    if (!this.isNative) {
+      await this.getCsrfToken();
+    }
+
+    try {
+      if (DEBUG_MODE) {
+        console.log("🔑 Fetching _token from server...");
+      }
+
+      // Fetch the login page to get the _token from HTML or get it via API
+      const response = await fetch(`${API_BASE_URL}/login`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          Accept: "text/html,application/json",
+        },
+      });
+
+      if (response.ok) {
+        const text = await response.text();
+
+        // Try to extract _token from HTML response
+        const tokenMatch =
+          text.match(/name=["']_token["'].*?value=["']([^"']+)["']/) ||
+          text.match(/value=["']([^"']+)["'].*?name=["']_token["']/);
+
+        if (tokenMatch && tokenMatch[1]) {
+          this._token = tokenMatch[1];
+          this._tokenFetched = true;
+
+          if (DEBUG_MODE) {
+            console.log(
+              "✅ _token fetched:",
+              this._token.substring(0, 20) + "..."
+            );
+          }
+
+          return this._token;
+        }
+
+        // Fallback: check if CSRF token can be used as _token
+        const cookies = document.cookie.split(";");
+        for (const cookie of cookies) {
+          const [name, value] = cookie.trim().split("=");
+          if (name === "XSRF-TOKEN") {
+            this._token = decodeURIComponent(value);
+            this._tokenFetched = true;
+
+            if (DEBUG_MODE) {
+              console.log(
+                "✅ Using XSRF-TOKEN as _token:",
+                this._token.substring(0, 20) + "..."
+              );
+            }
+
+            return this._token;
+          }
+        }
+      }
+
+      // Final fallback to CSRF token already loaded in memory
+      if (this.csrfToken) {
+        this._token = this.csrfToken;
+        this._tokenFetched = true;
+
+        if (DEBUG_MODE) {
+          console.log(
+            "✅ Using cached CSRF token as _token:",
+            this._token.substring(0, 20) + "..."
+          );
+        }
+
+        return this._token;
+      }
+
+      console.warn("⚠️ Could not fetch _token from server");
+      return null;
+    } catch (error) {
+      console.warn("⚠️ Failed to fetch _token:", error);
+
+      if (this.csrfToken) {
+        this._token = this.csrfToken;
+        this._tokenFetched = true;
+
+        if (DEBUG_MODE) {
+          console.log(
+            "✅ Using cached CSRF token as _token after error:",
+            this._token.substring(0, 20) + "..."
+          );
+        }
+
+        return this._token;
+      }
+
+      return null;
     }
   }
 
@@ -102,10 +212,14 @@ class ApiClient {
 
     // Prepare headers
     const headers: Record<string, string> = {
-      "Content-Type": "application/json",
       Accept: "application/json",
       ...options.headers,
     };
+
+    // Don't set Content-Type if data is FormData (browser will set it automatically with boundary)
+    if (!(options.data instanceof FormData)) {
+      headers["Content-Type"] = "application/json";
+    }
 
     // Add CSRF token for web SPA
     if (!this.isNative && this.csrfToken) {
@@ -248,7 +362,12 @@ class ApiClient {
 
       // Send request
       if (options.data && ["POST", "PUT", "PATCH"].includes(options.method)) {
-        xhr.send(JSON.stringify(options.data));
+        // Use FormData as-is, or stringify JSON
+        if (options.data instanceof FormData) {
+          xhr.send(options.data);
+        } else {
+          xhr.send(JSON.stringify(options.data));
+        }
       } else {
         xhr.send();
       }
@@ -281,7 +400,12 @@ class ApiClient {
 
     // Add body for POST, PUT, PATCH
     if (options.data && ["POST", "PUT", "PATCH"].includes(options.method)) {
-      fetchOptions.body = JSON.stringify(options.data);
+      // Use FormData as-is, or stringify JSON
+      if (options.data instanceof FormData) {
+        fetchOptions.body = options.data;
+      } else {
+        fetchOptions.body = JSON.stringify(options.data);
+      }
     }
 
     // Add timeout
@@ -443,6 +567,8 @@ class ApiClient {
   resetCsrf(): void {
     this.csrfToken = null;
     this.csrfFetched = false;
+    this._token = null;
+    this._tokenFetched = false;
   }
 }
 

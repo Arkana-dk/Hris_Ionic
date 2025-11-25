@@ -9,6 +9,14 @@ import {
   PaginatedResponse,
 } from "../types/api.types";
 
+/**
+ * Attendance Service untuk backend hris-fix
+ * API Endpoints:
+ * - GET  /api/employee/attendance - Get today's attendance
+ * - POST /api/employee/attendance - Clock in/out
+ * - GET  /api/employee/attendance/history - Get history
+ * - GET  /api/employee/attendance/statistics?month=11&year=2025 - Monthly stats
+ */
 class AttendanceService {
   private basePath = "/employee";
 
@@ -32,16 +40,38 @@ class AttendanceService {
   }
 
   /**
-   * Clock in/out
+   * Clock in/out (hris-fix backend)
+   * POST /api/employee/attendance
+   * Request: { check_in_location, check_in_latitude, check_in_longitude, photo? }
    */
   async clockIn(data: ClockInRequest): Promise<Attendance> {
     try {
+      console.log("⏰ Clock In/Out request to hris-fix:", data);
+
+      // Backend hris-fix expects:
+      // {
+      //   check_in_location: string,
+      //   check_in_latitude: number,
+      //   check_in_longitude: number,
+      //   photo?: string (base64)
+      // }
+      const requestData = {
+        check_in_location:
+          data.check_in_location || data.location || "Unknown Location",
+        check_in_latitude: data.check_in_latitude || data.latitude || 0,
+        check_in_longitude: data.check_in_longitude || data.longitude || 0,
+        photo: data.photo,
+      };
+
       const response = await apiClient.post<ApiResponse<Attendance>>(
         `${this.basePath}/attendance`,
-        data
+        requestData
       );
+
+      console.log("✅ Clock In/Out success:", response.data);
       return response.data.data;
     } catch (error) {
+      console.error("❌ Clock In/Out failed:", error);
       throw this.handleError(error);
     }
   }
@@ -139,19 +169,25 @@ class AttendanceService {
   }
 
   /**
-   * Get attendance statistics
+   * Get attendance statistics (hris-fix backend)
+   * GET /api/employee/attendance/statistics?month=11&year=2025
    */
   async getStatistics(params?: {
     month?: number;
     year?: number;
   }): Promise<AttendanceStatistics> {
     try {
+      console.log("📊 Get statistics from hris-fix:", params);
+
       const response = await apiClient.get<ApiResponse<AttendanceStatistics>>(
         `${this.basePath}/attendance/statistics`,
         { params }
       );
+
+      console.log("✅ Statistics received:", response.data);
       return response.data.data;
     } catch (error) {
+      console.error("❌ Get statistics failed:", error);
       throw this.handleError(error);
     }
   }

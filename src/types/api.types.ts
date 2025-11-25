@@ -21,6 +21,7 @@ export interface PaginatedResponse<T> {
 // ============================================
 
 export interface LoginRequest {
+  _token?: string;
   email: string;
   password: string;
 }
@@ -119,8 +120,16 @@ export interface AttendanceRequest {
 }
 
 export interface ClockInRequest {
+  // Backend hris-fix expects these fields:
+  check_in_location?: string; // Location name
+  check_in_latitude?: number; // GPS latitude
+  check_in_longitude?: number; // GPS longitude
+  photo?: string; // Base64 encoded photo or file
+
+  // Backward compatibility
   latitude?: number;
   longitude?: number;
+  location?: string;
   notes?: string;
 }
 

@@ -15,6 +15,9 @@ export { default as httpService } from "./http.service";
 // Auth Service - dengan Sanctum CSRF support
 export { default as authService } from "./auth.service";
 
+// Hakunamata API Service - Complete CRUD Operations
+export { default as hakunamataAPI } from "./hakunamata.service";
+
 // Feature Services
 export { default as profileService } from "./profile.service";
 export { default as attendanceService } from "./attendance.service";

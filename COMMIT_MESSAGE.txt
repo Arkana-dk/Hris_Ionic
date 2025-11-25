@@ -1,0 +1,45 @@
+# Git Commit Message
+
+```
+feat: Integrate Ionic app with hris-fix backend API
+
+🔗 Backend Repository: https://github.com/Arkana-dk/hris-fix
+
+## Changes Made:
+
+### API Configuration
+- ✅ Updated `src/services/api.config.ts` with hris-fix endpoints
+- ✅ Added API_ENDPOINTS mapping for 34 routes
+- ✅ Configured axios interceptors for Bearer token
+
+### Services Updated
+- ✅ `auth.service.ts` - Laravel Sanctum format (access_token + user)
+- ✅ `attendance.service.ts` - Clock In/Out with GPS location
+- ✅ `dashboard.service.ts` - Dashboard data from backend
+- ✅ `http.service.ts` - Already compatible
+
+### Types Updated
+- ✅ `api.types.ts` - ClockInRequest interface for backend
+
+### Documentation
+- ✅ `HRIS_FIX_INTEGRATION.md` - Complete integration guide
+- ✅ `QUICK_START_INTEGRATION.md` - Quick start summary
+- ✅ `test-hris-fix-integration.bat` - Test script
+
+## Backend API Endpoints (34 total):
+- POST /api/login
+- GET /api/employee/dashboard
+- POST /api/employee/attendance (Clock In/Out)
+- GET /api/employee/attendance/history
+- GET /api/employee/attendance/statistics
+- And 29 more endpoints...
+
+## Testing:
+1. Clone backend: git clone https://github.com/Arkana-dk/hris-fix.git
+2. Setup backend: composer install, migrate, seed
+3. Run backend: php artisan serve
+4. Run Ionic: npm run dev
+5. Test login & clock in features
+
+## Status: ✅ READY TO TEST
+```

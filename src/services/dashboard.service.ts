@@ -1,4 +1,21 @@
-import apiClient from "./api.client";
+import apiClient from "./api.config";
+
+/**
+ * Dashboard Service untuk backend hris-fix
+ * API Endpoint: GET /api/employee/dashboard
+ *
+ * Backend hris-fix response format:
+ * {
+ *   status: "success",
+ *   data: {
+ *     employee: { id, nik, name, photo_url, position },
+ *     today_summary: { is_clocked_in, clock_in_time, work_hours },
+ *     monthly_statistics: { present_days, late_days, total_work_hours, leave_balance },
+ *     upcoming_events: [],
+ *     announcements: []
+ *   }
+ * }
+ */
 
 export interface DashboardData {
   user?: {
@@ -54,22 +71,26 @@ export interface MonthlyStatistics {
 class DashboardService {
   /**
    * Get comprehensive dashboard data
-   * Endpoint: GET /api/employee/dashboard
+   * Endpoint: GET /api/employee/dashboard (hris-fix backend)
    */
   async getDashboard(): Promise<DashboardData> {
     try {
+      console.log("📊 Fetching dashboard from hris-fix backend...");
+
       const response = await apiClient.get<{ data: DashboardData }>(
         "/employee/dashboard"
       );
 
-      // Handle different response formats
-      if (response.data) {
-        return response.data;
+      console.log("✅ Dashboard data received:", response.data);
+
+      // Backend hris-fix returns: { status: "success", data: {...} }
+      if (response.data && response.data.data) {
+        return response.data.data;
       }
 
-      return response as unknown as DashboardData;
+      return response.data as DashboardData;
     } catch (error) {
-      console.error("Error fetching dashboard:", error);
+      console.error("❌ Error fetching dashboard:", error);
 
       // Return empty data if API not available yet
       const err = error as { response?: { status?: number }; message?: string };
@@ -83,7 +104,7 @@ class DashboardService {
         err.message?.includes("ERR_NETWORK")
       ) {
         console.warn(
-          "⚠️ Cannot connect to backend. Check if backend server is running."
+          "⚠️ Cannot connect to backend. Check if hris-fix backend server is running."
         );
       }
 
@@ -101,8 +122,7 @@ class DashboardService {
       const response = await apiClient.get<{ data: EventData[] }>(
         "/employee/events/today"
       );
-      const data = response as { data: EventData[] };
-      return data.data || [];
+      return response.data.data || [];
     } catch (error) {
       console.error("Error fetching today's events:", error);
       return [];
@@ -118,8 +138,7 @@ class DashboardService {
       const response = await apiClient.get<{ data: AnnouncementData[] }>(
         `/employee/announcements?limit=${limit}`
       );
-      const data = response as { data: AnnouncementData[] };
-      return data.data || [];
+      return response.data.data || [];
     } catch (error) {
       console.error("Error fetching announcements:", error);
       return [];
@@ -135,9 +154,8 @@ class DashboardService {
       const response = await apiClient.get<{ data: MonthlyStatistics }>(
         "/employee/statistics/monthly"
       );
-      const data = response as { data: MonthlyStatistics };
       return (
-        data.data || {
+        response.data.data || {
           attendance_count: 0,
           leave_used: 0,
           leave_remaining: 0,

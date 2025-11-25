@@ -13,29 +13,16 @@ export default defineConfig({
     setupFiles: "./src/setupTests.ts",
   },
   server: {
-    proxy: {
-      "/api": {
-        target: "https://hakunamatata.my.id",
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/api/, "/api"),
-        configure: (proxy) => {
-          proxy.on("error", (err) => {
-            console.log("proxy error", err);
-          });
-          proxy.on("proxyReq", (_proxyReq, req) => {
-            console.log("Sending Request to the Target:", req.method, req.url);
-          });
-          proxy.on("proxyRes", (proxyRes, req) => {
-            console.log(
-              "Received Response from the Target:",
-              proxyRes.statusCode,
-              req.url
-            );
-          });
-        },
-      },
+    host: "0.0.0.0",
+    port: 8100,
+    strictPort: true,
+    cors: {
+      origin: ["http://localhost:8100"],
+      credentials: true,
     },
-    cors: true,
+  },
+  preview: {
+    host: "0.0.0.0",
+    port: 8100,
   },
 });
