@@ -539,33 +539,37 @@ const DashboardPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Banner Promo - MyTelkomsel Style */}
+            {/* Quick Links Banner - HR Workspace Style */}
             <div
               className="px-5 mb-5 animate-fadeInUp"
               style={{ animationDelay: "0.2s", animationFillMode: "backwards" }}
             >
-              <div className="relative bg-gradient-to-r from-rose-700 to-purple-700 rounded-3xl overflow-hidden shadow-2xl">
+              <div className="relative bg-gradient-to-r from-blue-800 via-blue-700 to-blue-600 rounded-3xl overflow-hidden shadow-2xl">
                 {/* Decorative elements */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-400/20 rounded-full blur-3xl"></div>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-400/20 rounded-full blur-3xl"></div>
                 <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
 
                 <div className="relative z-10 p-6">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
-                      <div className="inline-block bg-yellow-400 text-red-600 px-3 py-1 rounded-full text-xs font-black mb-2 shadow-lg">
-                        ⚡ FLASH PROMO
+                      <div className="inline-block bg-cyan-400 text-blue-900 px-3 py-1 rounded-full text-xs font-black mb-2 shadow-lg">
+                        💼 HR WORKSPACE
                       </div>
                       <h3 className="text-white font-black text-xl leading-tight mb-2 drop-shadow-lg">
-                        Special Offer!
+                        Employee Portal
                       </h3>
                       <p className="text-white/90 text-sm font-medium leading-relaxed drop-shadow">
-                        Get extra leave days - Limited time only!
+                        Access your attendance, leave requests, and payslips in
+                        one place
                       </p>
                     </div>
-                    <div className="text-5xl animate-bounce">🎉</div>
+                    <div className="text-5xl">🏢</div>
                   </div>
-                  <button className="mt-2 bg-white text-red-600 px-5 py-2.5 rounded-full text-sm font-bold hover:bg-yellow-400 hover:scale-105 transition-all duration-300 shadow-xl active:scale-95 border-2 border-white/30">
-                    Learn More →
+                  <button
+                    onClick={() => history.push("/profile")}
+                    className="mt-2 bg-white text-blue-700 px-5 py-2.5 rounded-full text-sm font-bold hover:bg-cyan-400 hover:text-blue-900 hover:scale-105 transition-all duration-300 shadow-xl active:scale-95 border-2 border-white/30"
+                  >
+                    View Profile →
                   </button>
                 </div>
 
@@ -578,55 +582,272 @@ const DashboardPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Announcements - Minimalist Design */}
+            {/* Company Info Card - Compact */}
+            <div
+              className="px-5 mb-5 animate-fadeInUp"
+              style={{
+                animationDelay: "0.25s",
+                animationFillMode: "backwards",
+              }}
+            >
+              <div className="relative bg-white rounded-2xl p-4 shadow-lg border border-gray-100 overflow-hidden">
+                {/* Decorative background */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-blue-100/40 to-transparent rounded-full blur-xl"></div>
+
+                <div className="relative z-10">
+                  {/* Header with Icon */}
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="relative">
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg">
+                        <svg
+                          className="w-6 h-6 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                          />
+                        </svg>
+                      </div>
+                      <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
+                        <svg
+                          className="w-2 h-2 text-white"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-gray-900 font-bold text-sm mb-0.5">
+                        PT. Hakuna Matata
+                      </h3>
+                      <p className="text-gray-500 text-[10px] font-medium">
+                        HR Workspace System
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Info Grid - Compact */}
+                  <div className="grid grid-cols-3 gap-2">
+                    {/* Contact */}
+                    <div className="col-span-3 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-3 border border-blue-100">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shadow-md">
+                          <svg
+                            className="w-4 h-4 text-white"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                            />
+                          </svg>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-gray-500 text-[9px] font-medium mb-0.5">
+                            Contact
+                          </p>
+                          <p className="text-gray-900 text-xs font-bold truncate">
+                            hris@hakunamatata.com
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Status */}
+                    <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-3 border border-green-100">
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <div className="w-6 h-6 bg-gradient-to-br from-green-500 to-green-600 rounded-md flex items-center justify-center">
+                          <svg
+                            className="w-3 h-3 text-white"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                      <p className="text-gray-500 text-[9px] font-medium mb-0.5">
+                        Status
+                      </p>
+                      <p className="text-gray-900 text-xs font-bold">Active</p>
+                    </div>
+
+                    {/* Year */}
+                    <div className="bg-gradient-to-br from-purple-50 to-violet-50 rounded-xl p-3 border border-purple-100">
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <div className="w-6 h-6 bg-gradient-to-br from-purple-500 to-purple-600 rounded-md flex items-center justify-center">
+                          <svg
+                            className="w-3 h-3 text-white"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                      <p className="text-gray-500 text-[9px] font-medium mb-0.5">
+                        Year
+                      </p>
+                      <p className="text-gray-900 text-xs font-bold">2025</p>
+                    </div>
+
+                    {/* Version */}
+                    <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-3 border border-orange-100">
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <div className="w-6 h-6 bg-gradient-to-br from-orange-500 to-orange-600 rounded-md flex items-center justify-center">
+                          <svg
+                            className="w-3 h-3 text-white"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                      <p className="text-gray-500 text-[9px] font-medium mb-0.5">
+                        Version
+                      </p>
+                      <p className="text-gray-900 text-xs font-bold">v1.0</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Announcements - Enhanced Card Design */}
             <div
               className="px-5 mb-24 animate-fadeInUp"
               style={{ animationDelay: "0.3s", animationFillMode: "backwards" }}
             >
-              <div className="bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden">
-                {/* Header */}
-                <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-                  <h2 className="font-bold text-base text-gray-900">
-                    Latest News
-                  </h2>
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                {/* Header with gradient */}
+                <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
+                      <svg
+                        className="w-4 h-4 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
+                        />
+                      </svg>
+                    </div>
+                    <h2 className="font-bold text-sm text-gray-900">
+                      Latest News
+                    </h2>
+                  </div>
                   <button
                     onClick={() => history.push("/announcements")}
-                    className="text-red-600 text-xs font-bold hover:text-red-700 transition-colors"
+                    className="text-blue-600 text-xs font-bold hover:text-blue-700 transition-colors"
                   >
                     See All →
                   </button>
                 </div>
 
                 {/* Content */}
-                <div className="p-4">
+                <div className="p-3">
                   {announcements.length > 0 ? (
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       {announcements.map((announcement) => (
                         <div
                           key={announcement.id}
-                          className="p-3 hover:bg-gray-50 rounded-2xl transition-all duration-200 cursor-pointer active:scale-[0.98]"
+                          className="relative bg-gradient-to-r from-gray-50 to-blue-50 hover:from-blue-50 hover:to-cyan-50 rounded-xl transition-all duration-300 cursor-pointer active:scale-[0.98] border border-gray-100 hover:border-blue-200"
                           onClick={() => history.push("/announcements")}
                         >
-                          <div className="flex gap-3 items-start">
-                            <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-red-500 to-pink-600 rounded-xl flex items-center justify-center shadow-md">
-                              <span className="text-lg">📢</span>
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <h4 className="text-gray-900 font-semibold text-sm mb-1 line-clamp-1">
-                                {announcement.title}
-                              </h4>
-                              <p className="text-gray-600 text-xs leading-relaxed line-clamp-2 mb-1.5">
-                                {announcement.content}
-                              </p>
-                              <p className="text-gray-400 text-[10px] font-medium">
-                                {new Date(
-                                  announcement.created_at
-                                ).toLocaleDateString("id-ID", {
-                                  day: "numeric",
-                                  month: "short",
-                                  year: "numeric",
-                                })}
-                              </p>
+                          {/* Decorative line */}
+                          <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 to-cyan-500 rounded-l-xl"></div>
+
+                          <div className="p-3 pl-4">
+                            <div className="flex gap-2 items-start">
+                              <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-lg flex items-center justify-center">
+                                <svg
+                                  className="w-4 h-4 text-white"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"
+                                  />
+                                </svg>
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-start justify-between gap-2 mb-1">
+                                  <h4 className="text-gray-900 font-semibold text-xs line-clamp-1 flex-1">
+                                    {announcement.title}
+                                  </h4>
+                                  <span className="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded text-[9px] font-bold whitespace-nowrap">
+                                    NEW
+                                  </span>
+                                </div>
+                                <p className="text-gray-600 text-[11px] leading-snug line-clamp-1 mb-1">
+                                  {announcement.content}
+                                </p>
+                                <div className="flex items-center gap-1">
+                                  <svg
+                                    className="w-2.5 h-2.5 text-gray-400"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                    />
+                                  </svg>
+                                  <p className="text-gray-400 text-[9px] font-medium">
+                                    {new Date(
+                                      announcement.created_at
+                                    ).toLocaleDateString("id-ID", {
+                                      day: "numeric",
+                                      month: "short",
+                                      year: "numeric",
+                                    })}
+                                  </p>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -634,9 +855,16 @@ const DashboardPage: React.FC = () => {
                     </div>
                   ) : (
                     <div className="py-8 text-center">
-                      <div className="text-4xl mb-2">📭</div>
-                      <p className="text-gray-500 text-sm font-medium">
+                      <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                        <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                        </svg>
+                      </div>
+                      <p className="text-gray-500 text-xs font-semibold mb-0.5">
                         No announcements yet
+                      </p>
+                      <p className="text-gray-400 text-[10px]">
+                        Check back later for updates
                       </p>
                     </div>
                   )}
