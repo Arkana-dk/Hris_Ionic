@@ -68,6 +68,7 @@ const AttendancePage: React.FC = () => {
   const loadAttendanceData = async () => {
     try {
       setLoading(true);
+      setError("");
 
       // Load both history and statistics in parallel
       const [attendanceData, statsData] = await Promise.all([
@@ -78,62 +79,36 @@ const AttendancePage: React.FC = () => {
               .split("T")[0],
             end_date: new Date().toISOString().split("T")[0],
           })
-          .catch(() => []),
+          .catch((err) => {
+            console.error("Failed to load history:", err);
+            return [];
+          }),
         attendanceService
           .getStatistics({
             month: new Date().getMonth() + 1,
             year: new Date().getFullYear(),
           })
-          .catch(() => null),
+          .catch((err) => {
+            console.error("Failed to load statistics:", err);
+            return null;
+          }),
       ]);
 
       setAttendanceHistory(attendanceData);
       setStatistics(statsData);
+
+      // Show warning if no data received
+      if (!statsData) {
+        setError("Gagal memuat statistik kehadiran");
+        setShowToast(true);
+      }
+      if (attendanceData.length === 0) {
+        console.warn("No attendance history data received");
+      }
     } catch (err) {
       console.error("Failed to load attendance:", err);
-      // Fallback to static data
-      setAttendanceHistory([
-        {
-          id: "1",
-          tanggal: "2025-11-03",
-          jam_masuk: "08:45",
-          jam_keluar: "17:30",
-          status: "present",
-          keterangan: "",
-        },
-        {
-          id: "2",
-          tanggal: "2025-11-02",
-          jam_masuk: "09:15",
-          jam_keluar: "17:45",
-          status: "late",
-          keterangan: "Terlambat 15 menit",
-        },
-        {
-          id: "3",
-          tanggal: "2025-11-01",
-          jam_masuk: "08:30",
-          jam_keluar: "17:15",
-          status: "present",
-          keterangan: "",
-        },
-        {
-          id: "4",
-          tanggal: "2025-10-31",
-          jam_masuk: "",
-          jam_keluar: "",
-          status: "absent",
-          keterangan: "Izin sakit",
-        },
-        {
-          id: "5",
-          tanggal: "2025-10-30",
-          jam_masuk: "08:50",
-          jam_keluar: "17:20",
-          status: "present",
-          keterangan: "",
-        },
-      ]);
+      setError("Gagal memuat data kehadiran. Silakan coba lagi.");
+      setShowToast(true);
     } finally {
       setLoading(false);
     }
@@ -148,16 +123,60 @@ const AttendancePage: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
-  // Use real statistics from API, fallback to static
+  // Calculate statistics from history data if API statistics not available
+  const calculateStatsFromHistory = () => {
+    if (!attendanceHistory || attendanceHistory.length === 0) {
+      return { present: 0, late: 0, absent: 0, totalHours: 0 };
+    }
+
+    const stats = {
+      present: 0,
+      late: 0,
+      absent: 0,
+      totalHours: 0,
+    };
+
+    attendanceHistory.forEach((record) => {
+      const status = record.status?.toLowerCase();
+
+      if (status === "present" || status === "hadir") {
+        stats.present++;
+      } else if (
+        status === "late" ||
+        status === "telat" ||
+        status === "terlambat"
+      ) {
+        stats.late++;
+      } else if (status === "absent" || status === "tidak hadir") {
+        stats.absent++;
+      }
+
+      // Calculate hours if both clock in and out exist
+      if (
+        (record.jam_masuk || record.clock_in) &&
+        (record.jam_keluar || record.clock_out)
+      ) {
+        stats.totalHours += calculateWorkHours(
+          record.jam_masuk || record.clock_in || "",
+          record.jam_keluar || record.clock_out || ""
+        );
+      }
+    });
+
+    return stats;
+  };
+
+  // Use real statistics from API, fallback to calculated from history
+  const calculatedStats = calculateStatsFromHistory();
   const monthlyStats = {
-    present: statistics?.present_days || 20,
-    late: statistics?.late_days || 3,
-    absent: statistics?.absent_days || 1,
+    present: statistics?.present_days || calculatedStats.present,
+    late: statistics?.late_days || calculatedStats.late,
+    absent: statistics?.absent_days || calculatedStats.absent,
     totalHours:
       typeof statistics?.total_hours === "string"
-        ? parseFloat(statistics.total_hours.split(":")[0] || "168")
-        : statistics?.total_hours || 176,
-    onTimeRate: statistics?.on_time_rate || 87,
+        ? parseFloat(statistics.total_hours.split(":")[0] || "0")
+        : statistics?.total_hours || Math.round(calculatedStats.totalHours),
+    onTimeRate: statistics?.on_time_rate || 0,
   };
 
   // Helper to calculate work hours

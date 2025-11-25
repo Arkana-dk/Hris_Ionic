@@ -28,7 +28,11 @@ import {
   leaveService,
   attendanceService,
 } from "../../services";
-import type { LeaveBalance } from "../../types/api.types";
+import type {
+  LeaveBalance,
+  LeaveRequest,
+  OvertimeRequest,
+} from "../../types/api.types";
 
 const PengajuanPage: React.FC = () => {
   const history = useHistory();
@@ -48,33 +52,67 @@ const PengajuanPage: React.FC = () => {
 
   // UI State management
   const [leaveBalance, setLeaveBalance] = useState<LeaveBalance | null>(null);
+  const [leaveHistory, setLeaveHistory] = useState<LeaveRequest[]>([]);
+  const [overtimeHistory, setOvertimeHistory] = useState<OvertimeRequest[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingBalance, setLoadingBalance] = useState(true);
+  const [loadingHistory, setLoadingHistory] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [showToast, setShowToast] = useState(false);
 
-  // Load leave balance on mount
+  // Load leave balance and history on mount
   useEffect(() => {
     loadLeaveBalance();
+    loadHistory();
   }, []);
 
   const loadLeaveBalance = async () => {
     try {
       setLoadingBalance(true);
       const balance = await leaveService.getLeaveBalance();
-      setLeaveBalance(balance);
-    } catch (err) {
-      console.error("Failed to load leave balance:", err);
-      // Use default values if API fails
+      console.log("✅ Leave balance loaded from API:", balance);
+
+      // Always set balance even if some fields are missing
       setLeaveBalance({
-        annual_leave: 12,
-        sick_leave: 8,
-        used_leave: 3,
-        remaining_leave: 17,
+        annual_leave: balance?.annual_leave || 0,
+        sick_leave: balance?.sick_leave || 0,
+        used_leave: balance?.used_leave || 0,
+        remaining_leave: balance?.remaining_leave || 0,
+      });
+    } catch (err) {
+      console.error("❌ Failed to load leave balance from API:", err);
+      console.error("Error details:", err);
+
+      // Show cards with zero values instead of empty state
+      setLeaveBalance({
+        annual_leave: 0,
+        sick_leave: 0,
+        used_leave: 0,
+        remaining_leave: 0,
       });
     } finally {
       setLoadingBalance(false);
+    }
+  };
+
+  const loadHistory = async () => {
+    try {
+      setLoadingHistory(true);
+
+      // Load both leave and overtime history in parallel
+      const [leaves, overtimes] = await Promise.all([
+        leaveService.getHistory().catch(() => []),
+        overtimeService.getHistory().catch(() => []),
+      ]);
+
+      setLeaveHistory(leaves);
+      setOvertimeHistory(overtimes);
+      console.log("✅ History loaded from API:", { leaves, overtimes });
+    } catch (err) {
+      console.error("❌ Failed to load history from API:", err);
+    } finally {
+      setLoadingHistory(false);
     }
   };
 
@@ -191,6 +229,10 @@ const PengajuanPage: React.FC = () => {
       setShowToast(true);
       resetForm();
 
+      // Reload history and balance
+      loadHistory();
+      loadLeaveBalance();
+
       setTimeout(() => {
         history.push("/history");
       }, 2000);
@@ -220,6 +262,9 @@ const PengajuanPage: React.FC = () => {
       setSuccess("Pengajuan lembur berhasil dikirim!");
       setShowToast(true);
       resetForm();
+
+      // Reload history
+      loadHistory();
 
       setTimeout(() => {
         history.push("/history");
@@ -338,7 +383,7 @@ const PengajuanPage: React.FC = () => {
                 )}
               </div>
 
-              {!loadingBalance && leaveBalance && (
+              {!loadingBalance && (
                 <div className="grid grid-cols-2 gap-3">
                   <div className="relative group bg-gradient-to-br from-blue-400 to-indigo-500 rounded-2xl p-4 overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
                     <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/10 to-white/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -353,7 +398,7 @@ const PengajuanPage: React.FC = () => {
                         </div>
                       </div>
                       <p className="text-3xl font-black text-white mb-1">
-                        {leaveBalance.annual_leave}
+                        {leaveBalance?.annual_leave || 0}
                       </p>
                       <p className="text-xs text-white/90 font-bold">
                         Cuti Tahunan
@@ -374,7 +419,7 @@ const PengajuanPage: React.FC = () => {
                         </div>
                       </div>
                       <p className="text-3xl font-black text-white mb-1">
-                        {leaveBalance.sick_leave}
+                        {leaveBalance?.sick_leave || 0}
                       </p>
                       <p className="text-xs text-white/90 font-bold">
                         Cuti Sakit
@@ -395,7 +440,7 @@ const PengajuanPage: React.FC = () => {
                         </div>
                       </div>
                       <p className="text-3xl font-black text-white mb-1">
-                        {leaveBalance.used_leave}
+                        {leaveBalance?.used_leave || 0}
                       </p>
                       <p className="text-xs text-white/90 font-bold">
                         Sudah Dipakai
@@ -416,7 +461,7 @@ const PengajuanPage: React.FC = () => {
                         </div>
                       </div>
                       <p className="text-3xl font-black text-white mb-1">
-                        {leaveBalance.remaining_leave}
+                        {leaveBalance?.remaining_leave || 0}
                       </p>
                       <p className="text-xs text-white/90 font-bold">
                         Sisa Cuti
@@ -740,6 +785,211 @@ const PengajuanPage: React.FC = () => {
                   )}
                 </IonButton>
               </div>
+            )}
+          </div>
+
+          {/* History Section */}
+          <div className="mt-5 bg-white/95 backdrop-blur-xl rounded-3xl p-5 shadow-2xl shadow-indigo-500/10 border border-white/50">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-black text-gray-800">
+                Riwayat {activeTab === "leave" ? "Cuti & Izin" : "Lembur"}
+              </h3>
+              {loadingHistory && (
+                <IonSpinner name="crescent" className="w-5 h-5" />
+              )}
+            </div>
+
+            {!loadingHistory && activeTab === "leave" && (
+              <>
+                {leaveHistory.length === 0 ? (
+                  <div className="text-center py-8">
+                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <FontAwesomeIcon
+                        icon={faCalendar}
+                        className="text-gray-400 text-2xl"
+                      />
+                    </div>
+                    <p className="text-sm text-gray-600 font-semibold mb-1">
+                      Belum ada riwayat pengajuan cuti
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      Pengajuan cuti Anda akan muncul di sini
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {leaveHistory.slice(0, 5).map((leave) => {
+                      const statusConfig = {
+                        pending: {
+                          bg: "bg-amber-50",
+                          border: "border-amber-200",
+                          text: "text-amber-700",
+                          badgeBg: "bg-amber-100",
+                          label: "PENDING",
+                        },
+                        approved: {
+                          bg: "bg-emerald-50",
+                          border: "border-emerald-200",
+                          text: "text-emerald-700",
+                          badgeBg: "bg-emerald-100",
+                          label: "DISETUJUI",
+                        },
+                        rejected: {
+                          bg: "bg-rose-50",
+                          border: "border-rose-200",
+                          text: "text-rose-700",
+                          badgeBg: "bg-rose-100",
+                          label: "DITOLAK",
+                        },
+                      };
+
+                      const config =
+                        statusConfig[leave.status] || statusConfig.pending;
+
+                      return (
+                        <div
+                          key={leave.id}
+                          className={`${config.bg} border ${config.border} rounded-2xl p-4`}
+                        >
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <FontAwesomeIcon
+                                  icon={
+                                    leave.leave_type === "annual"
+                                      ? faUmbrella
+                                      : leave.leave_type === "sick"
+                                      ? faHospital
+                                      : faBan
+                                  }
+                                  className={`${config.text}`}
+                                />
+                                <h4 className="text-sm font-bold text-gray-800">
+                                  {leave.leave_type === "annual"
+                                    ? "Cuti Tahunan"
+                                    : leave.leave_type === "sick"
+                                    ? "Cuti Sakit"
+                                    : "Izin"}
+                                </h4>
+                              </div>
+                              <p className="text-xs text-gray-600">
+                                {new Date(leave.start_date).toLocaleDateString(
+                                  "id-ID"
+                                )}{" "}
+                                -{" "}
+                                {new Date(leave.end_date).toLocaleDateString(
+                                  "id-ID"
+                                )}
+                              </p>
+                              <p className="text-xs text-gray-500 mt-1">
+                                {leave.duration} hari
+                              </p>
+                            </div>
+                            <span
+                              className={`${config.badgeBg} ${config.text} px-3 py-1 rounded-lg text-[10px] font-black`}
+                            >
+                              {config.label}
+                            </span>
+                          </div>
+                          <p className="text-xs text-gray-600 bg-white/50 rounded-lg p-2">
+                            {leave.reason}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </>
+            )}
+
+            {!loadingHistory && activeTab === "overtime" && (
+              <>
+                {overtimeHistory.length === 0 ? (
+                  <div className="text-center py-8">
+                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <FontAwesomeIcon
+                        icon={faClock}
+                        className="text-gray-400 text-2xl"
+                      />
+                    </div>
+                    <p className="text-sm text-gray-600 font-semibold mb-1">
+                      Belum ada riwayat pengajuan lembur
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      Pengajuan lembur Anda akan muncul di sini
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {overtimeHistory.slice(0, 5).map((overtime) => {
+                      const statusConfig = {
+                        pending: {
+                          bg: "bg-amber-50",
+                          border: "border-amber-200",
+                          text: "text-amber-700",
+                          badgeBg: "bg-amber-100",
+                          label: "PENDING",
+                        },
+                        approved: {
+                          bg: "bg-emerald-50",
+                          border: "border-emerald-200",
+                          text: "text-emerald-700",
+                          badgeBg: "bg-emerald-100",
+                          label: "DISETUJUI",
+                        },
+                        rejected: {
+                          bg: "bg-rose-50",
+                          border: "border-rose-200",
+                          text: "text-rose-700",
+                          badgeBg: "bg-rose-100",
+                          label: "DITOLAK",
+                        },
+                      };
+
+                      const config =
+                        statusConfig[overtime.status] || statusConfig.pending;
+
+                      return (
+                        <div
+                          key={overtime.id}
+                          className={`${config.bg} border ${config.border} rounded-2xl p-4`}
+                        >
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <FontAwesomeIcon
+                                  icon={faClockRotateLeft}
+                                  className={`${config.text}`}
+                                />
+                                <h4 className="text-sm font-bold text-gray-800">
+                                  Lembur
+                                </h4>
+                              </div>
+                              <p className="text-xs text-gray-600">
+                                {new Date(overtime.date).toLocaleDateString(
+                                  "id-ID"
+                                )}
+                              </p>
+                              <p className="text-xs text-gray-500 mt-1">
+                                {overtime.start_time} - {overtime.end_time} (
+                                {overtime.duration} jam)
+                              </p>
+                            </div>
+                            <span
+                              className={`${config.badgeBg} ${config.text} px-3 py-1 rounded-lg text-[10px] font-black`}
+                            >
+                              {config.label}
+                            </span>
+                          </div>
+                          <p className="text-xs text-gray-600 bg-white/50 rounded-lg p-2">
+                            {overtime.reason}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
